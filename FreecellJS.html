@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>HTML5 Freecell-JS</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta name="author" content="https://github.com/gitbrent/">
+	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
+	<meta name="description" content="HTML5 Freecell Card Game for iPad/Android and Desktop Browsers">
+	<meta name="keywords" content="HTML5, CSS3, JavaScript, iPad, iPad web app, iPad game, mobile web app, web app, html5 game, web standards, free web game, free kids game">
+
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans">
+	<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.min.css">
+	<link rel="stylesheet" type="text/css" href="css/playingcards.css">
+
+	<style type="text/css" media="all">
+		body { margin:0; background: url('img/table.jpg'); background-size: 100% 100%; overflow:hidden; }
+		div { box-sizing: border-box; }
+
+		/* DEBUG
+		#playArea div { border: 1px dotted red; }
+		*/
+
+		/* Pulse Grow */
+		@-webkit-keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
+		@keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
+		.hvr-pulse-grow {
+			display: inline-block;
+			transform: translateZ(0);
+			box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+			backface-visibility: hidden;
+		}
+		.hvr-pulse-grow-hover {
+			animation-name: hvr-pulse-grow;
+			animation-duration: 0.3s;
+			animation-timing-function: linear;
+			animation-iteration-count: infinite;
+			animation-direction: alternate;
+		}
+		/* --- */
+
+		#playArea { padding:30px 60px; }
+		#playArea > div { width: 100%; }
+
+		#topArea { display:table; margin-bottom:30px; }
+		#topArea > div { display:table-cell; width:50%; vertical-align:middle; text-align:center; }
+		#topArea > div:first-child { text-align: left;  }
+		#topArea > div:last-child  { text-align: right; }
+		#topArea > #cardOpen > div:last-child { margin-right: 0; }
+		#topArea > #cardFoun > div { text-align: center; }
+		#topArea > #cardFoun > div:last-child { margin-right: 0; }
+		#topArea > #cardFoun > .slot > h1 {
+			margin:0;
+			font-family: 'Open Sans';
+			font-weight: 100;
+			font-size:15em;
+			line-height:168px; vertical-align:middle;
+			color:rgba(130,130,130,0.25);
+		}
+
+		#cardCasc { position: relative; width: 100%; }
+		#cardCasc > div { width:120px; height:50px; display:inline-block; text-align:left; vertical-align:top; }
+
+		.card {
+			cursor: move;
+			display: inline-block;
+			width: 120px; height: 168px;
+			font-size: 7.5px; /* 7.5px = 120px */
+			margin: 0; /* for droppabel - WIP */
+			position: relative; /* so z-index works */
+		}
+		.card .corner span { font-size: 2.5em; }
+		.slot {
+			position: relative;
+			display: inline-block;
+			width: 120px; height: 168px;
+			margin: 0 20px 0 0;
+			border-radius: 0.8em;
+			background: rgba(0, 50, 0, 0.75);
+			font-size: 7.5px;
+		}
+		.slotHover { border: 1px solid #a7a7a7; opacity: 1; transform: scale(1.1); transition: .25s ease-in; }
+		.cascHover { opacity: .5; transition: .25s ease-in; }
+
+		/* All noselect obejcts */
+		h1, .card {
+			-webkit-user-select: none;
+			   -moz-user-select: none;
+				-ms-user-select: none;
+					user-select: none;
+		}
+	</style>
+
+	<script type="text/javascript" src="js/jquery-3.0.0.min.js"></script>
+	<script type="text/javascript" src="js/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+	<script type="text/javascript">
+		// PROTOTYPES
+		Array.prototype.shuffle = function(){
+			var i = this.length, j, temp;
+			if ( i == 0 ) return this;
+			while ( --i ) {
+				j = Math.floor( Math.random() * ( i + 1 ) );
+				temp = this[i]; this[i] = this[j]; this[j] = temp;
+			}
+			return this;
+		}
+	</script>
+
+	<script type="text/javascript">
+		// CONSTS
+		var CARD_OFFSET = 50;
+		var CARD_DECK = {
+			suits: [
+				{ name:'club',    logo:'♣' },
+				{ name:'diamond', logo:'♦' },
+				{ name:'heart',   logo:'♥' },
+				{ name:'spade',   logo:'♠' }
+			],
+			cards: [
+				{ name:'ace',   numb:'A',  class:'suit' },
+				{ name:'two',   numb:'2',  class:'suit' },
+				{ name:'three', numb:'3',  class:'suit' },
+				{ name:'four',  numb:'4',  class:'suit' },
+				{ name:'five',  numb:'5',  class:'suit' },
+				{ name:'six',   numb:'6',  class:'suit' },
+				{ name:'seven', numb:'7',  class:'suit' },
+				{ name:'eight', numb:'8',  class:'suit' },
+				{ name:'nine',  numb:'9',  class:'suit' },
+				{ name:'ten',   numb:'10', class:'suit' },
+				{ name:'jack',  numb:'J',  class:'face' },
+				{ name:'queen', numb:'Q',  class:'face' },
+				{ name:'king',  numb:'K',  class:'face' }
+			]
+		};
+		var SUIT_DICT = {
+			club:    { color:'b', accepts:['diamond', 'heart'] },
+			diamond: { color:'r', accepts:['club'   , 'spade'] },
+			heart:   { color:'r', accepts:['club'   , 'spade'] },
+			spade:   { color:'b', accepts:['diamond', 'heart'] }
+		};
+		var NUMB_DICT = {
+			A: { cascDrop:''  , founDrop:'2' },
+			2: { cascDrop:'A' , founDrop:'3' },
+			3: { cascDrop:'2' , founDrop:'4' },
+			4: { cascDrop:'3' , founDrop:'5' },
+			5: { cascDrop:'4' , founDrop:'6' },
+			6: { cascDrop:'5' , founDrop:'7' },
+			7: { cascDrop:'6' , founDrop:'8' },
+			8: { cascDrop:'7' , founDrop:'9' },
+			9: { cascDrop:'8' , founDrop:'10'},
+			10:{ cascDrop:'9' , founDrop:'J' },
+			J: { cascDrop:'10', founDrop:'Q' },
+			Q: { cascDrop:'J' , founDrop:'K' },
+			K: { cascDrop:'Q' , founDrop:''  }
+		};
+
+		// GAME SETUP
+		{
+			// SETUP: Game Options / Defaults
+			var gGameOpts = {};
+			gGameOpts.allowFounReuse = false;
+			gGameOpts.cheatUnlimOpen = false;
+			gGameOpts.showTips       = true;
+			gGameOpts.sound          = true;
+
+			// SETUP: Define / Start async load of sounds files
+			var gGameSounds = {};
+			gGameSounds.cardShuffle = new Audio("sounds/shuffle.ogg");
+			gGameSounds.cardFlip    = new Audio("sounds/cardFlip.ogg");
+		}
+
+		// ==============================================================================================
+
+		function handleFounDrop(event, ui, drop) {
+			// DOCS: "$(this) [drop] represents the droppable the draggable is dropped on. ui.draggable represents the draggable"
+			// NOTE: jQuery UI draggables will revert no matter what (even if we func accept:ARG and return true/fasle), so revert:false is reqd!
+
+			// RULE 1: Was only a single card provided?
+			if ( ui.helper.children().length != 1 ) {
+				if ( gGameOpts.showTips ) null; // TODO
+				return false;
+			}
+
+			// RULE 2: Is card valid?
+			if ( drop.children('.card').length == 0 ) {
+				if ( ui.draggable.data('numb') != 'A' ) {
+					if ( gGameOpts.showTips ) null; // TODO
+					return false;
+				}
+			}
+			else {
+				var card = $(ui.draggable);
+				var topCard = $(drop.children('.card').last());
+
+				// Is card next in sequence?
+				if ( topCard.data('suit') != card.data('suit') || NUMB_DICT[topCard.data('numb')].founDrop != card.data('numb') ) {
+					if ( gGameOpts.showTips ) null; // TODO
+					return false;
+				}
+			}
+
+			// ------------------------------------------------------------------------
+
+			// STEP 1: VFX/SFX update
+			if (gGameOpts.sound) gGameSounds.cardFlip.play();
+
+			// STEP 2: "Grab" card and place it into this foundation
+			{
+				// A: Remove revert or the card flyback animation will run (yes, even with code below that deatches it!)
+				ui.draggable.draggable('option', 'revert', false);
+				// B: "Grab"/Deatch/Append CARD
+				ui.draggable.detach().appendTo( $(drop) ).removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
+				// C: Unhide the card that we hid when we built draggable container
+				ui.draggable.find('span').css('visibility','visible'); // IMPORTANT: the cool cards we use have spans that must be set on their own
+				// D: Reset z-index to mid-level
+				ui.draggable.css('z-index', $(drop).find('.card').length);
+				// E: "Stack" all cards by using position (0,0)
+				ui.draggable.css({ position:'absolute', top:'0px', left:'0px' });
+			}
+
+			// STEP 3: Apply options
+			if ( !gGameOpts.allowFounReuse ) {
+				ui.draggable.draggable('disable');
+				ui.draggable.css('cursor','default');
+			}
+		}
+
+		function handleOpenDrop(event, ui, drop) {
+			// -------------------------------------------
+
+			// RULE 1: Was only a single card provided?
+			if ( ui.helper.children().length != 1 ) {
+				if ( gGameOpts.showTips ) null; // TODO
+				return false;
+			}
+
+			// -------------------------------------------
+
+			// STEP 1: VFX/SFX update
+			if (gGameOpts.sound) gGameSounds.cardFlip.play();
+
+			// STEP 2: "Grab" card and place it into this slow
+			// A: Remove revert or the card flyback animation will run (yes, even with code below that deatches it!)
+			ui.draggable.draggable('option', 'revert', false);
+			// B: "Grab"/Detach/Append CARD
+			ui.draggable.detach().appendTo(drop).removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
+			// C: Unhide the card that we hid when we built draggable container
+			ui.draggable.find('span').css('visibility','visible'); // IMPORTANT: the cool cards we use have spans that must be set on their own
+			// D: Fix positioning CSS
+			ui.draggable.css('top', '0px');
+			ui.draggable.css('left', '0px');
+			// E: Reset z-index to mid-level (use 999 so we're above any 500 but always under card which drags at 1000)
+			ui.draggable.css('z-index',999);
+
+			// STEP 3: Turn off this slot until it frees up again
+			if ( !gGameOpts.cheatUnlimOpen ) drop.droppable('disable');
+			else $.each(drop.children('.card'), function(i,card){ $(card).css('position','relative').css('top',i*-1*(168-20)+'px').css('left','0px');});
+
+			// STEP 4: Reset draggable params (esp. helper as prev one from cascades does things we no longer want to do)
+			var strNeeded = $(drop).attr('id');
+			ui.draggable.draggable({
+				helper: 'original',
+				start: function(event, ui){
+					$(this).css('z-index', 1000);
+					$(this).draggable('option', 'revert', true);
+					$('#'+strNeeded).droppable('enable');
+				},
+			});
+		}
+
+		function handleCascDrop(event, ui, drop) {
+			// DESIGN: We check for valid sets upon dragStart, so assume set sequence is valid upon drop
+			var cardTopCasc = $(drop).children().last();
+			var card = ( ui.helper.prop('id') == 'draggingContainer' ) ? ui.helper.children()[0] : ui.draggable;
+			var cards = ( ui.helper.prop('id') == 'draggingContainer' ) ? ui.helper.children() : [ui.draggable];
+
+			// RULE 1: Is the single-card/container-top-card in run order?
+			if ( $(drop).children().length > 0
+			 	&& ( $.inArray($(cardTopCasc).data('suit'), SUIT_DICT[$(card).data('suit')].accepts) == -1
+					|| NUMB_DICT[$(cardTopCasc).data('numb')].cascDrop != $(card).data('numb') )
+			) {
+				if ( gGameOpts.showTips ) null; // TODO
+				return false;
+			}
+
+			// STEP 1: VFX/SFX update
+			if (gGameOpts.sound) gGameSounds.cardFlip.play();
+
+			// STEP 2: "Grab" card(s) and place them into this cascade
+			$.each(cards, function(i,obj){
+				// NOTE: ui.helper.children()[0] != ui.draggable (!!!) - you can call .draggable() on the ui ene but not on the array element!!
+				// ....: Correct way is to call object directly using its id - reference does not work
+				var card = $('#'+$(obj).prop('id'));
+
+				// A: Remove revert or the card flyback animation will run (yes, even with code below that deatches it!)
+				card.draggable('option', 'revert', false);
+				// B: "Grab"/Detach/Append CARD
+				var intTop = ( $(drop).children().length > 0 )
+					? Number($(drop).children().last().css('top').replace('px','')) - (168 - CARD_OFFSET) : 0;
+				//ui.draggable.hide().detach().appendTo(drop).show('fast').removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
+				card.detach().appendTo(drop).removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
+				// C: Unhide the card that we hid when we built draggable container
+				card.find('span').css('visibility','visible'); // IMPORTANT: the cool cards we use have spans that must be set on their own
+				// D: Fix positioning CSS
+				card.css({ 'position':'relative', 'left':'0px', 'top':intTop+'px', 'z-index':'' });
+				// E: Reset draggable params (REQD here as we need to turn revert back on)
+				card.draggable({
+					helper: cascHelper,
+					start : function(event, ui){ $(this).draggable('option', 'revert', true); }
+				});
+			});
+
+			// STEP 3: Shorten fanning padding if card stack grows too large
+			// TODO: measure #playArea and length of children
+		}
+
+		// ==============================================================================================
+
+		function handleCardDblClick(card) {
+			// RULE 1: Only topmost card can be double-clicked
+			if ( $($(card).parent().find('.card:last-child')[0]).prop('id') != $(card).prop('id') ) return;
+
+			// STEP 1: Where are we?
+			switch ( $(card).parent().parent().prop('id') ) {
+				case 'cardCasc':
+					// CHECK 1: Can card go to foundation?
+					// TODO:
+
+					// CHECK 2: Do we have an open slot to send this card to?
+					var event = {};
+					var ui = { draggable:$(card), helper:{ children:function(){ return [$(card)]; } } };
+					var drop = null;
+					if      ( $('#cardOpen1').children().length == 0 ) drop = $('#cardOpen1');
+					else if ( $('#cardOpen2').children().length == 0 ) drop = $('#cardOpen2');
+					else if ( $('#cardOpen3').children().length == 0 ) drop = $('#cardOpen3');
+					else if ( $('#cardOpen4').children().length == 0 ) drop = $('#cardOpen4');
+					else return false;
+					handleOpenDrop(event, ui, drop);
+					break;
+				default:
+					break;
+			}
+
+			// TODO: more!!!
+
+		}
+
+		function handleDragStart(event, ui){
+			var prevCard;
+
+			// STEP 1: If a group is being dragged, then vallidate the sequence, otherwise, dont allow drag to even start
+			if ( ui.helper.prop('id') == 'draggingContainer' && ui.helper.children().length > 1 ) {
+				for (var idx=0; idx<ui.helper.children().length; idx++) {
+					var card = ui.helper.children()[idx];
+					// Just capture first card, then start checking seq
+					if ( idx > 0 ) {
+						if ( $.inArray($(card).data('suit'), SUIT_DICT[$(prevCard).data('suit')].accepts) == -1
+							|| NUMB_DICT[$(prevCard).data('numb')].cascDrop != $(card).data('numb')
+						) {
+							// Disallow drag start
+							handleDragStop(event, ui);
+							return false;
+						}
+					}
+					prevCard = card;
+				}
+			}
+		}
+
+		function handleDragStop(event, ui){
+			// STEP 1: Re-display hidden/cloned cards on revert (or orig one being dragged shows)
+			$('#cardCasc div, #cardCasc span').show().css('visibility', 'visible');
+		}
+
+		// ==============================================================================================
+
+		function cascHelper() {
+			// A: Build container and fill with cards selected
+			var container = $('<div/>').attr('id', 'draggingContainer').addClass('cardCont');
+			container.css( 'position', 'absolute' );
+			container.css( 'width', '120px' );
+			container.css( 'z-index', '1000' );
+			container.css( 'top' , $(this).offset().top +'px' );
+			container.css( 'left', $(this).offset().left+'px' );
+			container.append( $(this).clone() );
+			container.append( $(this).nextAll('.card').clone() );
+
+			// B: Hide original cards
+			$(this).css('visibility','hidden'); // IMPORTANT: Dont hide() this or container jumps to {0,0} (jQuery must be using .next or whataver)
+			$(this).find('span').css('visibility','hidden'); // IMPORTANT: the cool cards we use have spans that must be set on their own
+			$(this).nextAll().hide();
+
+			// C: "Cascade" cards in container to match orig style
+			// REQD! We have to do this as we use negative margins to stack cards above, else they'll go up in this container and look all doofy
+			container.find('div.card').each(function(i,ele){ $(this).css('position', 'absolute').css('top', (i*CARD_OFFSET)+'px'); });
+
+			// LAST:
+			return container;
+		}
+
+		function doFillBoard() {
+			var arrCards = [];
+			var strHtml = '';
+
+			// STEP 1: VFX/SFX
+			if (gGameOpts.sound) gGameSounds.cardShuffle.play();
+
+			// STEP 2: Build cards
+			$.each(CARD_DECK.suits, function(i,suit){
+				$.each(CARD_DECK.cards, function(j,card){
+					// A:
+					var objNode = $('<div id="card'+ suit.name.substring(0,1) + card.numb +'" class="card" '
+						+ ' data-suit="'+suit.name+'" data-numb="'+card.numb+'">'
+						+ '<div class="card-'+card.name+' '+suit.name+'">'
+						+ '<div class="corner top"><span class="number">'+card.numb+'</span><span>'+suit.logo+'</span></div>'
+						+ (card.class == 'suit'
+							? '<span class="suit top_center">'+suit.logo+'</span><span class="suit bottom_center">'+suit.logo+'</span>'
+							: '<span class="face middle_center"><img src="img/faces/face-'+card.name+'-'+suit.name+'.png"></span>'
+						)
+						+ '<div class="corner bottom"><span class="number">'+card.numb+'</span><span>'+suit.logo+'</span></div>'
+						+ '</div>'
+						+ '</div>');
+					// B:
+					arrCards.push( objNode );
+				});
+			});
+
+			// STEP 3: Shuffle / Deal cards into tableau, fanned style
+			var intCol = 1, intTop = 0;
+			$.each(arrCards.shuffle(), function(i,card){
+				// NOTE: Set on the element itself (using a class with these values will not work)
+				card.css('position','relative');
+				card.css('left', (i%2 == 0 ? '-1000px' : '1000px') );
+				card.css('top',  (i%2 == 0 ? '-1000px' : '1000px') );
+
+				// Append CARD using animation
+				$('#cardCasc'+intCol).append( card.animate({ left:0, top:-($('#cardCasc'+intCol+' .card').length * (168-CARD_OFFSET)) + 'px' }, (i*1000/52) ) );
+
+				// Fill cascade cols in round-robin order
+				if (intCol>=8) { intCol = 0; intTop = 0; }
+				intCol++
+			});
+
+			// STEP 4: Draggable setup
+			$('.card').draggable({
+				helper: cascHelper,
+				revert: true,
+				start : handleDragStart,
+                stop  : handleDragStop
+			})
+			.dblclick(function(){ handleCardDblClick($(this)); });
+
+			// STEP 5: Adjust cascade cols Width and Height
+			intMar = (($('#cardCasc').innerWidth() - 8*120) / 7);
+			$('#cardCasc > div').each(function(i,col){
+				// W: (Dont add marfign to final col/casc)
+				if ( i+1 < $('#cardCasc > div').length ) $(this).css('margin-right', intMar+'px');
+
+				// H: Cards arent block-type so cascade is tiny! Make it hit bottom of window (-10) so it'll be a good droppable
+				$(this).css('height', ($(window).innerHeight() - $(this).offset().top - 10)+'px');
+			});
+		}
+
+		function appStart() {
+			// STEP 1: Setup 3 core droppable areas
+			$('#cardFoun .slot').droppable({
+				accept:     '.card',
+				hoverClass: 'hvr-pulse-grow-hover',
+				tolerance:  'pointer',
+				drop:       function(event,ui){handleFounDrop(event,ui,$(this));}
+			});
+
+			$('#cardOpen .slot').droppable({
+				accept:     '.card',
+				hoverClass: 'hvr-pulse-grow-hover',
+				drop:       function(event,ui){ handleOpenDrop(event, ui, $(this)); }
+			});
+
+			$('#cardCasc > div').droppable({
+				accept:     '.card',
+				hoverClass: 'cascHover',
+				drop:       function(event,ui){ handleCascDrop(event, ui, $(this)); }
+			});
+
+			// STEP 2: Fill board
+			// TODO: have start button to do this
+			doFillBoard();
+		}
+
+		// ==============================================================================================
+		$(document).ready(function(){ appStart(); })
+	</script>
+</head>
+<body>
+	<div id="playArea">
+		<div id="topArea">
+			<div id="cardFoun"><div id="cardFoun1" class="slot"><h1>A</h1></div><div id="cardFoun2" class="slot"><h1>A</h1></div><div id="cardFoun3" class="slot"><h1>A</h1></div><div id="cardFoun4" class="slot"><h1>A</h1></div></div>
+			<div id="cardOpen"><div id="cardOpen1" class="slot"></div><div id="cardOpen2" class="slot"></div><div id="cardOpen3" class="slot"></div><div id="cardOpen4" class="slot"></div></div>
+		</div>
+		<div id="cardCasc"><div id="cardCasc1"></div><div id="cardCasc2"></div><div id="cardCasc3"></div><div id="cardCasc4"></div><div id="cardCasc5"></div><div id="cardCasc6"></div><div id="cardCasc7"></div><div id="cardCasc8"></div></div>
+	</div>
+
+	<!-- ========================================================================================= -->
+	<div id="TESTAREA" style="background:green; height:185px; margin:30px 80px; padding:10px; display:none">
+
+		<button onclick="btnTest(); return false;">SOUND</button>
+
+		<div id="cardD2" class="card">
+			<div class="card-two diamond">
+				<div class="corner top"><span class="number">2</span><span>♦</span></div>
+				<span class="suit top_center">♦</span><span class="suit bottom_center">♦</span>
+				<div class="corner bottom"><span class="number">2</span><span>♦</span></div>
+			</div>
+		</div>
+
+		<div id="cardCKing" class="card"><div class="card-king club">
+			<div class="corner top"><span class="number">K</span><span>♣</span></div>
+			<span class="face middle_center"><img src="img/faces/face-king-club.png"></span>
+			<div class="corner bottom"><span class="number">K</span><span>♣</span></div>
+		</div></div>
+
+		<div class="card" id="view60" style="position: relative; overflow: visible; background: rgb(255, 255, 255);"><div class="card-back"><span class="middle_center"><img src="img/back.png"></span></div></div>
+
+	</div>
+
+</body>
+</html>
