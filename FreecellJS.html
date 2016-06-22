@@ -100,6 +100,7 @@
 
 	<script type="text/javascript" src="js/jquery-3.0.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
 	<script type="text/javascript">
 		// PROTOTYPES
 		Array.prototype.shuffle = function(){
@@ -452,15 +453,16 @@
 			});
 
 			// STEP 4: Draggable setup
-			$('.card').draggable({
+			$('.card')
+			.draggable({
 				helper: cascHelper,
 				revert: true,
 				start : handleDragStart,
-                stop  : handleDragStop,
-				touchstart: handleDragStart,
-				touchstop: handleDragStop,
+                stop  : handleDragStop
 			})
-			.dblclick(function(){ handleCardDblClick($(this)); });
+			.dblclick(function(){
+				handleCardDblClick($(this));
+			});
 
 			// STEP 5: Adjust cascade cols Width and Height
 			intMar = (($('#cardCasc').innerWidth() - 8 * gCardW) / 7);
