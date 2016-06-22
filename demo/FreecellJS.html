@@ -9,7 +9,7 @@
 	<meta name="description" content="HTML5 Freecell Card Game for iPad/Android and Desktop Browsers">
 	<meta name="keywords" content="HTML5, CSS3, JavaScript, iPad, iPad web app, iPad game, mobile web app, web app, html5 game, web standards, free web game, free kids game">
 
-	<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Open+Sans'>
+	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans">
 	<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.min.css">
 	<link rel="stylesheet" type="text/css" href="css/playingcards.css">
 
@@ -20,20 +20,6 @@
 		/* DEBUG
 		#playArea div { border: 1px dotted red; }
 		*/
-
-		/* WIP - pulse works, just not using for now */
-		@-webkit-keyframes cardPulse {
-		  from { background-color: #c7c7c7; -webkit-box-shadow: 0 0 9px #eee; }
-		   50% { background-color: #ffffff; -webkit-box-shadow: 0 0 18px #ffffff; }
-		    to { background-color: #c7c7c7; -webkit-box-shadow: 0 0 9px #eee; }
-		}
-		.pulse {
-		  -webkit-animation-name: cardPulse;
-		  -webkit-animation-duration: 1s;
-		  -webkit-animation-iteration-count: infinite;
-		  transition: background-color 300ms ease-outs;
-		}
-
 
 		/* Pulse Grow */
 		@-webkit-keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
@@ -95,6 +81,13 @@
 		}
 		.slotHover { border: 1px solid #a7a7a7; opacity: 1; transform: scale(1.1); transition: .25s ease-in; }
 		.cascHover { opacity: .5; transition: .25s ease-in; }
+
+		/* Responsive Rules: 1024=iPad(landscape) */
+		@media only screen and (max-width: 1024px) {
+			#playArea { padding:15px 30px; }
+			.card, .slot, #cardCasc > div { width:90px; height:126px; font-size:5.75px; }
+			#topArea > #cardFoun > .slot > h1 { line-height:126px; }
+		}
 
 		/* All noselect obejcts */
 		h1, .card {
@@ -167,13 +160,16 @@
 			Q: { cascDrop:'J' , founDrop:'K' },
 			K: { cascDrop:'Q' , founDrop:''  }
 		};
+		// VARIABLES
+		var gCardW = 120;
+		var gCardH = 168;
 
 		// GAME SETUP
 		{
 			// SETUP: Game Options / Defaults
 			var gGameOpts = {};
 			gGameOpts.allowFounReuse = false;
-			gGameOpts.cheatUnlimOpen = true; // DEBUG
+			gGameOpts.cheatUnlimOpen = true;
 			gGameOpts.showTips       = true;
 			gGameOpts.sound          = true;
 
@@ -268,7 +264,7 @@
 
 			// STEP 3: Turn off this slot until it frees up again
 			if ( !gGameOpts.cheatUnlimOpen ) drop.droppable('disable');
-			else $.each(drop.children('.card'), function(i,card){ $(card).css('position','relative').css('top',i*-1*(168-20)+'px').css('left','0px');});
+			else $.each(drop.children('.card'), function(i,card){ $(card).css('position','relative').css('top',i*-1*(gCardH-20)+'px').css('left','0px');});
 
 			// STEP 4: Reset draggable params (esp. helper as prev one from cascades does things we no longer want to do)
 			var strNeeded = $(drop).attr('id');
@@ -310,7 +306,7 @@
 				card.draggable('option', 'revert', false);
 				// B: "Grab"/Detach/Append CARD
 				var intTop = ( $(drop).children().length > 0 )
-					? Number($(drop).children().last().css('top').replace('px','')) - (168 - CARD_OFFSET) : 0;
+					? Number($(drop).children().last().css('top').replace('px','')) - (gCardH - CARD_OFFSET) : 0;
 				//ui.draggable.hide().detach().appendTo(drop).show('fast').removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
 				card.detach().appendTo(drop).removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
 				// C: Unhide the card that we hid when we built draggable container
@@ -392,7 +388,7 @@
 			// A: Build container and fill with cards selected
 			var container = $('<div/>').attr('id', 'draggingContainer').addClass('cardCont');
 			container.css( 'position', 'absolute' );
-			container.css( 'width', '120px' );
+			container.css( 'width', gCardW+'px' );
 			container.css( 'z-index', '1000' );
 			container.css( 'top' , $(this).offset().top +'px' );
 			container.css( 'left', $(this).offset().left+'px' );
@@ -448,7 +444,7 @@
 				card.css('top',  (i%2 == 0 ? '-1000px' : '1000px') );
 
 				// Append CARD using animation
-				$('#cardCasc'+intCol).append( card.animate({ left:0, top:-($('#cardCasc'+intCol+' .card').length * (168-CARD_OFFSET)) + 'px' }, (i*1000/52) ) );
+				$('#cardCasc'+intCol).append( card.animate({ left:0, top:-($('#cardCasc'+intCol+' .card').length * (gCardH-CARD_OFFSET)) + 'px' }, (i*1000/52) ) );
 
 				// Fill cascade cols in round-robin order
 				if (intCol>=8) { intCol = 0; intTop = 0; }
@@ -460,12 +456,14 @@
 				helper: cascHelper,
 				revert: true,
 				start : handleDragStart,
-                stop  : handleDragStop
+                stop  : handleDragStop,
+				touchstart: handleDragStart,
+				touchstop: handleDragStop,
 			})
 			.dblclick(function(){ handleCardDblClick($(this)); });
 
 			// STEP 5: Adjust cascade cols Width and Height
-			intMar = (($('#cardCasc').innerWidth() - 8*120) / 7);
+			intMar = (($('#cardCasc').innerWidth() - 8 * gCardW) / 7);
 			$('#cardCasc > div').each(function(i,col){
 				// W: (Dont add marfign to final col/casc)
 				if ( i+1 < $('#cardCasc > div').length ) $(this).css('margin-right', intMar+'px');
@@ -476,7 +474,14 @@
 		}
 
 		function appStart() {
-			// STEP 1: Setup 3 core droppable areas
+			// STEP 1: Responsive Setup
+			if ( window.matchMedia('screen and (max-width: 1024px)').matches ) {
+				gCardW = 90;
+				gCardH = 126;
+				CARD_OFFSET = 40;
+			}
+
+			// STEP 2: Setup 3 core droppable areas
 			$('#cardFoun .slot').droppable({
 				accept:     '.card',
 				hoverClass: 'hvr-pulse-grow-hover',
@@ -496,7 +501,7 @@
 				drop:       function(event,ui){ handleCascDrop(event, ui, $(this)); }
 			});
 
-			// STEP 2: Fill board
+			// STEP 3: Fill board
 			// TODO: have start button to do this
 			doFillBoard();
 		}
