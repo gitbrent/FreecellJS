@@ -1,7 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Freecell-JS :: HTML5+JavaScript Online Card Game</title>
+	<!--
+	| /*******************************************************************************
+	|  name: FreecellJS
+	|  file: FreecellJS.html
+	|
+	|  Copyright (c) 2015-2016. Brent Ely;
+	|  https://github.com/gitbrent/
+	|
+	|  Licences: MIT
+	|  http://www.opensource.org/licenses/mit-license.php
+	|  ******************************************************************************/
+	-->
+	<title>Freecell-JS :: Free HTML5 Card Game</title>
 	<link rel="icon" href="img/favicon.png">
 	<link rel="apple-touch-icon" href="img/favicon.png">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -11,93 +23,17 @@
 	<meta name="description" content="HTML5 Freecell Card Game for iPad/Android and Desktop Browsers">
 	<meta name="keywords" content="HTML5, CSS3, JavaScript, iPad, iPad web app, iPad game, mobile web app, web app, html5 game, web standards, free web game, free kids game">
 
+	<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Play'>
+	<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Roboto:100'>
+	<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Roboto:400'>
 	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans">
 	<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.min.css">
 	<link rel="stylesheet" type="text/css" href="css/playingcards.css">
-
-	<style type="text/css" media="all">
-		body { margin:0; background: url('img/table.jpg'); background-size: 100% 100%; overflow:hidden; }
-		div { box-sizing: border-box; }
-
-		/* Pulse Grow */
-		@-webkit-keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
-		@keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
-		.hvr-pulse-grow {
-			display: inline-block;
-			transform: translateZ(0);
-			box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-			backface-visibility: hidden;
-		}
-		.hvr-pulse-grow-hover {
-			animation-name: hvr-pulse-grow;
-			animation-duration: 0.3s;
-			animation-timing-function: linear;
-			animation-iteration-count: infinite;
-			animation-direction: alternate;
-		}
-		/* --- */
-
-		#playArea { padding:30px 60px; }
-		#playArea > div { width: 100%; }
-
-		#topArea { display:table; margin-bottom:30px; }
-		#topArea > div { display:table-cell; width:50%; vertical-align:middle; text-align:center; }
-		#topArea > div:first-child { text-align: left;  }
-		#topArea > div:last-child  { text-align: right; }
-		#topArea > #cardOpen > div:last-child { margin-right: 0; }
-		#topArea > #cardFoun > div { text-align: center; }
-		#topArea > #cardFoun > div:last-child { margin-right: 0; }
-		#topArea > #cardFoun > .slot > h1 {
-			margin:0;
-			font-family: 'Open Sans';
-			font-weight: 100;
-			font-size:15em;
-			line-height:168px; vertical-align:middle;
-			color:rgba(130,130,130,0.25);
-		}
-
-		#cardCasc { position: relative; width: 100%; }
-		#cardCasc > div { width:120px; height:50px; display:inline-block; text-align:left; vertical-align:top; }
-
-		.card {
-			cursor: move;
-			display: inline-block;
-			width: 120px; height: 168px;
-			font-size: 7.5px; /* 7.5px = 120px */
-			margin: 0; /* for droppabel - WIP */
-			position: relative; /* so z-index works */
-		}
-		.card .corner span { font-size: 2.5em; }
-		.slot {
-			position: relative;
-			display: inline-block;
-			width: 120px; height: 168px;
-			margin: 0 20px 0 0;
-			border-radius: 0.8em;
-			background: rgba(0, 50, 0, 0.75);
-			font-size: 7.5px;
-		}
-		.slotHover { border: 1px solid #a7a7a7; opacity: 1; transform: scale(1.1); transition: .25s ease-in; }
-		.cascHover { opacity: .5; transition: .25s ease-in; }
-
-		/* Responsive Rules: 1024=iPad(landscape) */
-		@media only screen and (max-width: 1024px) {
-			#playArea { padding:15px 30px; }
-			.card, .slot, #cardCasc > div { width:90px; height:126px; font-size:5.75px; }
-			#topArea > #cardFoun > .slot > h1 { line-height:126px; }
-		}
-
-		/* All noselect obejcts */
-		h1, .card {
-			-webkit-user-select: none;
-			   -moz-user-select: none;
-				-ms-user-select: none;
-					user-select: none;
-		}
-	</style>
+	<link rel="stylesheet" type="text/css" href="css/FreecellJS.css">
 
 	<script type="text/javascript" src="js/jquery-3.0.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery-ui-1.11.4/jquery-ui.min.js"></script>
+	<script type="text/javascript" src="js/jquery-migrate-3.0.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
 	<script type="text/javascript">
 		// PROTOTYPES
@@ -168,7 +104,8 @@
 			// SETUP: Game Options / Defaults
 			var gGameOpts = {};
 			gGameOpts.allowFounReuse = false;
-			gGameOpts.cheatUnlimOpen = true;
+			gGameOpts.cheatUnlimOpen = false;
+			gGameOpts.debugOneLeft   = false;
 			gGameOpts.showTips       = true;
 			gGameOpts.sound          = true;
 
@@ -176,6 +113,7 @@
 			var gGameSounds = {};
 			gGameSounds.cardShuffle = new Audio("sounds/shuffle.ogg");
 			gGameSounds.cardFlip    = new Audio("sounds/cardFlip.ogg");
+			gGameSounds.crowdCheer  = new Audio("sounds/CrowdCheer.mp3");
 		}
 
 		// ==============================================================================================
@@ -232,6 +170,9 @@
 				ui.draggable.draggable('disable');
 				ui.draggable.css('cursor','default');
 			}
+
+			// STEP 4: CHECK: End of game?
+			if ( $('#cardFoun .card').length == 52 ) doGameWon();
 		}
 
 		function handleOpenDrop(event, ui, drop) {
@@ -429,6 +370,7 @@
 			if (gGameOpts.sound) gGameSounds.cardShuffle.play();
 
 			// STEP 2: Build cards
+			$('.card').remove();
 			$.each(CARD_DECK.suits, function(i,suit){
 				$.each(CARD_DECK.cards, function(j,card){
 					// A:
@@ -450,19 +392,35 @@
 
 			// STEP 3: Shuffle / Deal cards into tableau, fanned style
 			var intCol = 1, intTop = 0;
-			$.each(arrCards.shuffle(), function(i,card){
-				// NOTE: Set on the element itself (using a class with these values will not work)
-				card.css('position','relative');
-				card.css('left', (i%2 == 0 ? '-1000px' : '1000px') );
-				card.css('top',  (i%2 == 0 ? '-1000px' : '1000px') );
+			if ( gGameOpts.debugOneLeft ) {
+				$.each(arrCards, function(i,card){
+					if      (i < 13) $('#cardFoun1').append( card.css('position','absolute').animate({ left:0, top:0 }, (i*1000/52)) );
+					else if (i < 26) $('#cardFoun2').append( card.css('position','absolute').animate({ left:0, top:0 }, (i*1000/52)) );
+					else if (i < 39) $('#cardFoun3').append( card.css('position','absolute').animate({ left:0, top:0 }, (i*1000/52)) );
+					else if (i < 51) $('#cardFoun4').append( card.css('position','absolute').animate({ left:0, top:0 }, (i*1000/52)) );
+					else             $('#cardCasc1').append( card.css('position','absolute').animate({ left:0, top:0 }, (i*1000/52)) );
+				});
+			}
+			else {
+				$.each(arrCards.shuffle(), function(i,card){
+					// NOTE: Set on the element itself (using a class with these values will not work)
+					card.css('position','relative');
+					card.css('left', (i%2 == 0 ? '-1000px' : '1000px') );
+					card.css('top',  (i%2 == 0 ? '-1000px' : '1000px') );
 
-				// Append CARD using animation
-				$('#cardCasc'+intCol).append( card.animate({ left:0, top:-($('#cardCasc'+intCol+' .card').length * (gCardH-CARD_OFFSET)) + 'px' }, (i*1000/52) ) );
+					// Append CARD using animation
+					$('#cardCasc'+intCol).append( card.animate({ left:0, top:-($('#cardCasc'+intCol+' .card').length * (gCardH-CARD_OFFSET)) + 'px' }, (i*1000/52) ) );
 
-				// Fill cascade cols in round-robin order
-				if (intCol>=8) { intCol = 0; intTop = 0; }
-				intCol++
-			});
+					// Fill cascade cols in round-robin order
+					if (intCol>=8) { intCol = 0; intTop = 0; }
+					intCol++
+				});
+			}
+			/* RESPONSIVE */
+			if ( window.matchMedia('screen and (max-width: 1024px)').matches ) {
+				// Just remove these so they dont un-hide after drags
+				$('.card .face, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center').remove();
+			}
 
 			// STEP 4: Draggable setup
 			$('.card')
@@ -479,12 +437,31 @@
 			// STEP 5: Adjust cascade cols Width and Height
 			intMar = (($('#cardCasc').innerWidth() - 8 * gCardW) / 7);
 			$('#cardCasc > div').each(function(i,col){
-				// W: (Dont add marfign to final col/casc)
+				// W: (Dont add margin to final col/casc)
 				if ( i+1 < $('#cardCasc > div').length ) $(this).css('margin-right', intMar+'px');
 
 				// H: Cards arent block-type so cascade is tiny! Make it hit bottom of window (-10) so it'll be a good droppable
 				$(this).css('height', ($(window).innerHeight() - $(this).offset().top - 10)+'px');
 			});
+		}
+
+		function doGameWon() {
+			// FYI: pulsing CSS text (http://jsfiddle.net/thirtydot/aDZLy/)
+			var intDelay = 500;
+
+			// STEP 1: VFX/SFX update
+			if (gGameOpts.sound) gGameSounds.crowdCheer.play();
+
+			// STEP 2:
+			$('#dialogYouWon').dialog('open');
+			console.log('boom');
+
+			// STEP 3:
+			for (var idx=12; idx>=0; idx--){
+				$('.card[data-numb='+CARD_DECK.cards[idx].numb+']').each(function(i,card){
+					$(card).animate( {left:( Math.floor(Math.random()*12) * 100 )+'px', top:($(window).innerHeight()*1.1)+'px'}, (intDelay += 100), function(){$(this).remove();} );
+				});
+			}
 		}
 
 		function appStart() {
@@ -495,7 +472,29 @@
 				CARD_OFFSET = 40;
 			}
 
-			// STEP 2: Setup 3 core droppable areas
+			// STEP 2: Dialog setup
+			$('#dialogYouWon').dialog({
+				modal: true,
+				autoOpen: false,
+			    draggable: false,
+			    resizable: false,
+				dialogClass: 'dialogYouWon',
+				closeOnEscape: false,
+				width: ($(window).innerWidth() * 0.6),
+				height: ($(window).innerHeight() * 0.4)
+			});
+			$('#dialogMenu').dialog({
+				modal: true,
+				autoOpen: false,
+			    draggable: false,
+			    resizable: false,
+				dialogClass: 'dialogYouWon',
+				closeOnEscape: true,
+				width: ($(window).innerWidth() * 0.4),
+				height: ($(window).innerHeight() * 0.3)
+			});
+
+			// STEP 3: Setup 3 core droppable areas
 			$('#cardFoun .slot').droppable({
 				accept:     '.card',
 				hoverClass: 'hvr-pulse-grow-hover',
@@ -525,36 +524,23 @@
 	</script>
 </head>
 <body>
+	<div id="dialogMenu" style="display:none">
+		<div style="text-align:center; font-family:Roboto; font-size:48px; color:#0088cc;">MENU</div>
+		<div class="bigBtnBar"><button onclick="$('#dialogMenu').dialog('close'); doFillBoard();">New Game</button></div>
+	</div>
+
+	<div id="dialogYouWon" style="display:none">
+		<div class="bigText">WINNER!!!</div>
+		<div class="bigBtnBar"><button onclick="$('#dialogYouWon').dialog('close'); doFillBoard();">Play Again</button></div>
+	</div>
+
 	<div id="playArea">
 		<div id="topArea">
-			<div id="cardFoun"><div id="cardFoun1" class="slot"><h1>A</h1></div><div id="cardFoun2" class="slot"><h1>A</h1></div><div id="cardFoun3" class="slot"><h1>A</h1></div><div id="cardFoun4" class="slot"><h1>A</h1></div></div>
-			<div id="cardOpen"><div id="cardOpen1" class="slot"></div><div id="cardOpen2" class="slot"></div><div id="cardOpen3" class="slot"></div><div id="cardOpen4" class="slot"></div></div>
+			<div id="cardFoun" style="width:45%"><div id="cardFoun1" class="slot"><h1>A</h1></div><div id="cardFoun2" class="slot"><h1>A</h1></div><div id="cardFoun3" class="slot"><h1>A</h1></div><div id="cardFoun4" class="slot"><h1>A</h1></div></div>
+			<div id="gameTitle" style="width:10%">Freecell<span>JS</span><button id="btnMenu" onclick="$('#dialogMenu').dialog('open')">MENU</button></div>
+			<div id="cardOpen" style="width:45%"><div id="cardOpen1" class="slot"></div><div id="cardOpen2" class="slot"></div><div id="cardOpen3" class="slot"></div><div id="cardOpen4" class="slot"></div></div>
 		</div>
 		<div id="cardCasc"><div id="cardCasc1"></div><div id="cardCasc2"></div><div id="cardCasc3"></div><div id="cardCasc4"></div><div id="cardCasc5"></div><div id="cardCasc6"></div><div id="cardCasc7"></div><div id="cardCasc8"></div></div>
 	</div>
-
-	<!-- ========================================================================================= -->
-	<div id="TESTAREA" style="background:green; height:185px; margin:30px 80px; padding:10px; display:none">
-
-		<button onclick="btnTest(); return false;">SOUND</button>
-
-		<div id="cardD2" class="card">
-			<div class="card-two diamond">
-				<div class="corner top"><span class="number">2</span><span>♦</span></div>
-				<span class="suit top_center">♦</span><span class="suit bottom_center">♦</span>
-				<div class="corner bottom"><span class="number">2</span><span>♦</span></div>
-			</div>
-		</div>
-
-		<div id="cardCKing" class="card"><div class="card-king club">
-			<div class="corner top"><span class="number">K</span><span>♣</span></div>
-			<span class="face middle_center"><img src="img/faces/face-king-club.png"></span>
-			<div class="corner bottom"><span class="number">K</span><span>♣</span></div>
-		</div></div>
-
-		<div class="card" id="view60" style="position: relative; overflow: visible; background: rgb(255, 255, 255);"><div class="card-back"><span class="middle_center"><img src="img/back.png"></span></div></div>
-
-	</div>
-
 </body>
 </html>
