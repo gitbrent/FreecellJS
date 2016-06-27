@@ -21,7 +21,7 @@
 	<meta name="author" content="https://github.com/gitbrent/">
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
 	<meta name="description" content="HTML5 Freecell Card Game for iPad/Android and Desktop Browsers">
-	<meta name="keywords" content="HTML5, CSS3, JavaScript, iPad, iPad web app, iPad game, mobile web app, web app, html5 game, web standards, free web game, free kids game">
+	<meta name="keywords" content="iOS web app, iPad game, mobile web app, html5 card game, free mobile game, free mobile card game">
 
 	<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Play'>
 	<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Roboto:100'>
@@ -35,8 +35,8 @@
 	<script type="text/javascript" src="js/jquery-ui-1.11.4/jquery-ui.min.js"></script>
 	<script type="text/javascript" src="js/jquery-migrate-3.0.0.min.js"></script>
 	<script type="text/javascript" src="js/jquery.ui.touch-punch.min.js"></script>
+	<!-- PROTOTYPES -->
 	<script type="text/javascript">
-		// PROTOTYPES
 		Array.prototype.shuffle = function(){
 			var i = this.length, j, temp;
 			if ( i == 0 ) return this;
@@ -466,10 +466,17 @@
 
 		function appStart() {
 			// STEP 1: Responsive Setup
-			if ( window.matchMedia('screen and (max-width: 1024px)').matches ) {
+			if ( window.matchMedia('screen and (max-width: 736px)').matches ) {
+				gCardW = 65;
+				gCardH = 91;
+				CARD_OFFSET = 20;
+				console.log('later');
+			}
+			else if ( window.matchMedia('screen and (max-width: 1024px)').matches ) {
 				gCardW = 90;
 				gCardH = 126;
 				CARD_OFFSET = 40;
+				console.log('1024');
 			}
 
 			// STEP 2: Dialog setup
