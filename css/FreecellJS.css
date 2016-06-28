@@ -9,22 +9,37 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-body { margin:0; background: url('../img/table.jpg'); background-size: 100% 100%; overflow:hidden; }
+body { margin:0; background: url('../img/table.jpg'); background-size: cover; overflow:hidden; }
 div { box-sizing: border-box; }
 
-.ui-widget-overlay { background: rgba(0,0,0,0.9); } /* FUTURE */
-
-.ui-dialog {
-    background-color: #222222;
-    background: repeating-linear-gradient(45deg, #d7d7d7 0%, #d7d7d7 10%, #eee 0%, #eee 50%) 0 / 15px 15px;
-}
+/* jQuery UI Dialog */
+.ui-dialog-titlebar { display: none; }
+.ui-widget-overlay { background: rgba(0,0,0,0.9); }
 
 .dialogYouWon {
-    border-radius: 100px;
+    background-color: #222222;
+    background: repeating-linear-gradient(45deg, #d7d7d7 0%, #d7d7d7 10%, #eee 0%, #eee 50%) 0 / 15px 15px;
+    border-radius: 50px;
     border-width: 20px;
 }
-.ui-dialog-titlebar {
-    display: none;
+
+.dialogCool {
+    background-color: #00f700;
+    background: repeating-linear-gradient(
+      45deg,
+      #aade7c  0px, #aade7c 10px,
+      #caefab 10px, #caefab 20px
+    );
+    border-radius: 50px;
+    border-width: 20px;
+}
+.dialogCool .menuTitle
+{
+    text-align: center;
+    font-family: Calibri;
+    font-size: 48px;
+    color: white;
+    text-shadow:0px 1px 0px #5b8a3c;
 }
 
 @keyframes neonGreen {
@@ -47,9 +62,11 @@ div { box-sizing: border-box; }
     text-align: center;
 }
 .bigBtnBar button {
-	box-shadow: 0px 10px 14px -7px #3e7327;
+    width: 75%;
+    margin: 40px 0;
+	box-shadow: 0px 10px 15px -4px #3e7327;
 	background-color:#77b55a; background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
-	border-radius:10px; border:2px solid #4b8f29;
+	border-radius:10px; border:5px solid #4b8f29;
 	display:inline-block;
 	cursor:pointer;
 	color:#ffffff; font-size:28px; font-weight:bold;
@@ -93,11 +110,29 @@ button:focus { outline:0 !important; opacity: 0.75; }
 #topArea { display:table; margin-bottom:30px; }
 #topArea > div { display:table-cell; vertical-align:middle; text-align:center; }
 #topArea > div:first-child { text-align: left;  }
-#topArea > div#gameTitle { font-family: Roboto; font-size: 2em; font-weight: 100; letter-spacing: 2px; color:#d7f7d7; }
-#topArea > div#gameTitle span { display: block; font-size: 3em; line-height: .9em; color:#449944; }
 #topArea > div:last-child  { text-align: right; }
+
 #topArea > #cardOpen > div:last-child { margin-right: 0; }
 #topArea > #cardFoun > div { text-align: center; }
+
+#topArea > div#gameTitle {
+    position: relative;
+    padding: 5px 10px;
+    font-family: Roboto; font-size: 2.2em; font-weight: 100;
+    text-shadow: 2px 2px 3px #333;
+    color: #88dd88;
+    vertical-align: top;
+}
+#topArea > div#gameTitle > div#title { margin: 2px 0 0 0; }
+#topArea > div#gameTitle > div > div {
+    display: inline-block; width: 50%;
+    font-size: 1em; line-height: 1em;
+    vertical-align: middle;
+    text-shadow: 0px 0px 10px #aade7c;
+}
+#topArea > div#gameTitle div.blk { color:black;   }
+#topArea > div#gameTitle div.red { color:#df0000; }
+
 #topArea > #cardFoun > div:last-child { margin-right: 0; }
 #topArea > #cardFoun > .slot > h1 {
     margin:0;
@@ -107,6 +142,20 @@ button:focus { outline:0 !important; opacity: 0.75; }
     line-height:168px; vertical-align:middle;
     color:rgba(130,130,130,0.25);
 }
+
+#btnMenu {
+    position: absolute;
+    bottom: 5px; left:10px;
+    display:inline-block;
+    cursor:pointer;
+    width: 95%; width: calc(100% - 20px);
+    margin-top: 10px; padding: 4px 24px;
+	background: linear-gradient(to bottom, #77d42a 5%, #5cb811 100%); background-color:#77d42a;
+    border:1px solid #268a16; border-radius:6px;
+    box-shadow: inset 0px 1px 0px 0px #caefab;
+    font-size: 0.4em; color: #306108; text-decoration: none; text-shadow:0px 2px 0px #aade7c;
+}
+#btnMenu:hover { background:linear-gradient(to bottom, #5cb811 5%, #77d42a 100%); background-color:#5cb811; }
 
 #cardCasc { position: relative; width: 100%; }
 #cardCasc > div { width:120px; height:50px; display:inline-block; text-align:left; vertical-align:top; }
@@ -129,29 +178,11 @@ button:focus { outline:0 !important; opacity: 0.75; }
     margin: 0 20px 0 0;
     border-radius: 0.8em;
     background: rgba(0, 50, 0, 0.75);
+    box-shadow: inset 0px 0px 3px 0px #ddffdd;
     font-size: 7.5px;
 }
 .slotHover { border: 1px solid #a7a7a7; opacity: 1; transform: scale(1.1); transition: .25s ease-in; }
 .cascHover { opacity: .5; transition: .25s ease-in; }
-
-#btnMenu {
-    width:100%;
-    margin-top: 10px;
-	box-shadow:inset 0px 1px 0px 0px #caefab;
-	background:linear-gradient(to bottom, #77d42a 5%, #5cb811 100%);
-	background-color:#77d42a;
-	border-radius:6px;
-	border:1px solid #268a16;
-	display:inline-block;
-	cursor:pointer;
-	color:#306108;
-	font-size:0.6em;
-	padding:4px 24px;
-	text-decoration:none;
-	text-shadow:0px 1px 0px #aade7c;
-}
-#btnMenu:hover { background:linear-gradient(to bottom, #5cb811 5%, #77d42a 100%); background-color:#5cb811; }
-#btnMenu:active { position:relative; top:1px; }
 
 /* All noselect obejcts */
 h1, .card, div#gameTitle {

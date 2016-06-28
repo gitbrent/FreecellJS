@@ -111,9 +111,10 @@
 
 			// SETUP: Define / Start async load of sounds files
 			var gGameSounds = {};
-			gGameSounds.cardShuffle = new Audio("sounds/shuffle.ogg");
 			gGameSounds.cardFlip    = new Audio("sounds/cardFlip.ogg");
+			gGameSounds.cardShuffle = new Audio("sounds/shuffle.ogg");
 			gGameSounds.crowdCheer  = new Audio("sounds/CrowdCheer.mp3");
+			gGameSounds.sadTrombone = new Audio("sounds/sadTrombone.ogg");
 		}
 
 		// ==============================================================================================
@@ -495,10 +496,9 @@
 				autoOpen: false,
 			    draggable: false,
 			    resizable: false,
-				dialogClass: 'dialogYouWon',
+				dialogClass: 'dialogCool',
 				closeOnEscape: true,
-				width: ($(window).innerWidth() * 0.4),
-				height: ($(window).innerHeight() * 0.3)
+				width: ($(window).innerWidth() * 0.3)
 			});
 
 			// STEP 3: Setup 3 core droppable areas
@@ -532,8 +532,11 @@
 </head>
 <body>
 	<div id="dialogMenu" style="display:none">
-		<div style="text-align:center; font-family:Roboto; font-size:48px; color:#0088cc;">MENU</div>
-		<div class="bigBtnBar"><button onclick="$('#dialogMenu').dialog('close'); doFillBoard();">New Game</button></div>
+		<div class="bigBtnBar">
+			<button onclick="$('#dialogMenu').dialog('close'); doFillBoard();">New Game</button>
+			<button onclick="$('#dialogMenu').dialog('close');">Options</button>
+			<button onclick="$('#dialogMenu').dialog('close');">Resume</button>
+		</div>
 	</div>
 
 	<div id="dialogYouWon" style="display:none">
@@ -544,7 +547,12 @@
 	<div id="playArea">
 		<div id="topArea">
 			<div id="cardFoun" style="width:45%"><div id="cardFoun1" class="slot"><h1>A</h1></div><div id="cardFoun2" class="slot"><h1>A</h1></div><div id="cardFoun3" class="slot"><h1>A</h1></div><div id="cardFoun4" class="slot"><h1>A</h1></div></div>
-			<div id="gameTitle" style="width:10%">Freecell<span>JS</span><button id="btnMenu" onclick="$('#dialogMenu').dialog('open')">MENU</button></div>
+			<div id="gameTitle" style="width:10%">
+				<div><div class="red">♥</div><div class="blk">♠</div></div>
+				<div id="title">FREECELL</div>
+				<div><div class="blk">♣</div><div class="red">♦</div></div>
+				<button id="btnMenu" onclick="$('#dialogMenu').dialog('open')">MENU</button>
+			</div>
 			<div id="cardOpen" style="width:45%"><div id="cardOpen1" class="slot"></div><div id="cardOpen2" class="slot"></div><div id="cardOpen3" class="slot"></div><div id="cardOpen4" class="slot"></div></div>
 		</div>
 		<div id="cardCasc"><div id="cardCasc1"></div><div id="cardCasc2"></div><div id="cardCasc3"></div><div id="cardCasc4"></div><div id="cardCasc5"></div><div id="cardCasc6"></div><div id="cardCasc7"></div><div id="cardCasc8"></div></div>
