@@ -9,8 +9,22 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
-body { margin:0; background: url('../img/table.jpg'); background-size: cover; overflow:hidden; }
+body {
+    margin: 0px;
+    overflow: hidden;
+    background: url('../img/table.jpg');
+    background-size: 100% 100%;
+}
 div { box-sizing: border-box; }
+
+@keyframes neonGreen {
+  from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #FFDD1B, 0 0 70px #FFDD1B, 0 0 80px #FFDD1B, 0 0 100px #FFDD1B, 0 0 150px #FFDD1B; }
+    to { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #FFDD1B, 0 0 35px #FFDD1B, 0 0 40px #FFDD1B, 0 0 50px #FFDD1B, 0 0 75px #FFDD1B; }
+}
+@keyframes neonPurple {
+    from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #ff00de, 0 0 70px #ff00de, 0 0 80px #ff00de, 0 0 100px #ff00de, 0 0 150px #ff00de; }
+      to { text-shadow: 0 0  5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #ff00de, 0 0 35px #ff00de, 0 0 40px #ff00de, 0 0  50px #ff00de, 0 0 75px #ff00de; }
+}
 
 /* jQuery UI Dialog */
 .ui-dialog-titlebar { display: none; }
@@ -25,16 +39,10 @@ div { box-sizing: border-box; }
 
 .dialogCool {
     background-color: #00f700;
-    background: repeating-linear-gradient(
-      45deg,
-      #aade7c  0px, #aade7c 10px,
-      #caefab 10px, #caefab 20px
-    );
-    border-radius: 50px;
-    border-width: 20px;
+    background: repeating-linear-gradient( 45deg, #2A6C15 0px, #2A6C15 20px, #3A7C25 20px, #3A7C25 40px );
+    border-radius: 30px; border-width: 15px;
 }
-.dialogCool .menuTitle
-{
+.dialogCool .menuTitle {
     text-align: center;
     font-family: Calibri;
     font-size: 48px;
@@ -42,14 +50,6 @@ div { box-sizing: border-box; }
     text-shadow:0px 1px 0px #5b8a3c;
 }
 
-@keyframes neonGreen {
-  from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #FFDD1B, 0 0 70px #FFDD1B, 0 0 80px #FFDD1B, 0 0 100px #FFDD1B, 0 0 150px #FFDD1B; }
-    to { text-shadow: 0 0 5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #FFDD1B, 0 0 35px #FFDD1B, 0 0 40px #FFDD1B, 0 0 50px #FFDD1B, 0 0 75px #FFDD1B; }
-}
-@keyframes neonPurple {
-    from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #ff00de, 0 0 70px #ff00de, 0 0 80px #ff00de, 0 0 100px #ff00de, 0 0 150px #ff00de; }
-      to { text-shadow: 0 0  5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #ff00de, 0 0 35px #ff00de, 0 0 40px #ff00de, 0 0  50px #ff00de, 0 0 75px #ff00de; }
-}
 .bigText {
     font-size: 140px;
     text-align: center;
@@ -62,29 +62,27 @@ div { box-sizing: border-box; }
     text-align: center;
 }
 .bigBtnBar button {
-    width: 75%;
-    margin: 40px 0;
-	box-shadow: 0px 10px 15px -4px #3e7327;
+    width: 85%;
+    display: inline-block;
+	cursor: pointer;
+    margin: 30px 0;
+    font-size: 1.75em;
+    box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
 	background-color:#77b55a; background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
-	border-radius:10px; border:5px solid #4b8f29;
-	display:inline-block;
-	cursor:pointer;
+	border-radius:10px; border:1px solid #4b8f29;
 	color:#ffffff; font-size:28px; font-weight:bold;
-	padding:12px 32px;
-	text-decoration:none;
+	padding:20px 10px;
+	text-decoration:none; white-space: nowrap;
 	text-shadow:0px 1px 0px #5b8a3c;
 }
-.bigBtnBar button:hover {
-	background:linear-gradient(to bottom, #72b352 5%, #77b55a 100%);
-	background-color:#72b352;
-}
-.bigBtnBar button:active {
-	position:relative;
-	top:1px;
-}
+.bigBtnBar button:hover { transform: scale(1.05); transition: .25s ease-in; }
+.bigBtnBar button:nth-child(1) { background:linear-gradient(to bottom, #D21615 0%,#BC1317 100%); border-color: #BC1317; }
+.bigBtnBar button:nth-child(2) { background:linear-gradient(to bottom, #03BBE5 0%,#0288D4 100%); border-color: #0288D4; }
+.bigBtnBar button:nth-child(3) { background:linear-gradient(to bottom, #15D418 0%,#17BC14 100%); border-color: #17BC14; }
+.bigBtnBar button:nth-child(4) { background:linear-gradient(to bottom, #921AD3 0%,#8415C4 100%); border-color: #8415C4; }
 
-/* Remove annoying blue shadow border around buttons post-click - BUT, make button change opactiy for accessability */
-button:focus { outline:0 !important; opacity: 0.75; }
+/* Remove annoying blue shadow border around buttons post-click - TODO: what to do for accessability */
+button:focus { outline:0 !important; }
 
 /* Pulse Grow */
 @-webkit-keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
@@ -107,6 +105,7 @@ button:focus { outline:0 !important; opacity: 0.75; }
 #playArea { padding:30px 60px; }
 #playArea > div { width: 100%; }
 
+/* ---------- Top Area ---------- */
 #topArea { display:table; margin-bottom:30px; }
 #topArea > div { display:table-cell; vertical-align:middle; text-align:center; }
 #topArea > div:first-child { text-align: left;  }
@@ -157,9 +156,11 @@ button:focus { outline:0 !important; opacity: 0.75; }
 }
 #btnMenu:hover { background:linear-gradient(to bottom, #5cb811 5%, #77d42a 100%); background-color:#5cb811; }
 
+/* ---------- Card Casc ---------- */
 #cardCasc { position: relative; width: 100%; }
 #cardCasc > div { width:120px; height:50px; display:inline-block; text-align:left; vertical-align:top; }
 
+/* ---------- Card/Slot ---------- */
 .card {
     cursor: move;
     display: inline-block;
@@ -195,21 +196,43 @@ h1, .card, div#gameTitle {
 /* --------------------------------------------------------------------------------------------- */
 /* --------------------------------------------------------------------------------------------- */
 
-/* Responsive Rules: 1024=iPad(landscape) */
-@media only screen and (max-width: 1024px) {
+/* Responsive Rules: <1400= */
+@media only screen and (max-width: 1400px) {
     #playArea { padding:15px 30px; }
-    .card, .slot, #cardCasc > div { width:90px; height:126px; font-size:8px; }
+    #topArea > div#gameTitle { font-size: 1.5em; }
+    #topArea > div#gameTitle > div#title { margin: 4px 0; }
+    #topArea > div#gameTitle > div > div { font-size: 2em; }
+}
+@media only screen and (max-width: 1280px) {
+    #playArea { padding:15px 30px; }
+    #topArea > div#gameTitle { font-size: 1.5em; }
+    #topArea > div#gameTitle > div#title { margin: 4px 0; }
+    #topArea > div#gameTitle > div > div { font-size: 2em; }
+
+    .card, .slot, #cardCasc > div { width:95px; height:133px; font-size:5.94px; }
     .card .corner { font-size:1.5em; }
     .card .face, .card .face img, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center { visibility: hidden; }
     .card .corner.top    { top: 0.6em; left: 0.5em; }
     .card .corner.bottom { bottom: 0.6em; right:0.6em; }
     .card .corner span { font-size: 4.5em; }
     .card .corner.top, .card .corner.bottom { text-align: left; }
-
-    /* width:95px; = font-size:5.9375px */
+}
+/* Responsive Rules: 1024=iPad(landscape) */
+@media only screen and (max-width: 1024px) {
+    #playArea { padding:15px 20px; }
     #topArea > #cardFoun > .slot > h1 { line-height:126px; }
     #topArea > div#gameTitle { font-size: 1.5em; }
-    #topArea > div#gameTitle span { font-size: 2.25em; }
+    #topArea > div#gameTitle > div#title { margin: 3px 0; }
+    #topArea > div#gameTitle > div > div { font-size: 1.2em; }
+
+    .card, .slot, #cardCasc > div { width:90px; height:126px; font-size:8px; }
+    .card .corner { font-size:1.5em; }
+    .card .face, .card .face img, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center { visibility: hidden; }
+    .card .corner span { font-size: 4.5em; margin-top:0.4em; }
+    .card .corner.top    { top: 0.3em; left: 1.0em; text-align: left; }
+    .card .corner.bottom { bottom: 0.5em; right:0.8em; text-align:right; }
+    .card .corner.bottom span { text-align:center; transform:rotate(180deg); }
+    .card .corner.bottom span.number { padding-top:0.5em; text-align:right; }
 }
 
 /* Responsive Rules: 736=iPhone6Plus(landscape) */

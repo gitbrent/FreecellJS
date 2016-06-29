@@ -98,6 +98,7 @@
 		// VARIABLES
 		var gCardW = 120;
 		var gCardH = 168;
+		var gTimer;
 
 		// GAME SETUP
 		{
@@ -339,6 +340,29 @@
 
 		// ==============================================================================================
 
+		function handleMenuBtn() {
+			$('#dialogMenu').dialog('open');
+			$('#dialogMenu button').blur();
+		}
+
+		function handleOptionsOpen() {
+			// STEP 1: Update UI options
+			$('#chkOptSound').prop('checked', gGameOpts.sound);
+
+			// LAST: Open dialog
+			$('#dialogOptions').dialog('open');
+		}
+
+		function handleOptionsClose() {
+			// STEP 1: Update game options
+			gGameOpts.sound = $('#chkOptSound').prop('checked');
+
+			// LAST: Close dialog
+			$('#dialogOptions').dialog('close');
+		}
+
+		// ==============================================================================================
+
 		function cascHelper() {
 			// A: Build container and fill with cards selected
 			var container = $('<div/>').attr('id', 'draggingContainer').addClass('cardCont');
@@ -417,11 +441,6 @@
 					intCol++
 				});
 			}
-			/* RESPONSIVE */
-			if ( window.matchMedia('screen and (max-width: 1024px)').matches ) {
-				// Just remove these so they dont un-hide after drags
-				$('.card .face, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center').remove();
-			}
 
 			// STEP 4: Draggable setup
 			$('.card')
@@ -436,7 +455,20 @@
 			});
 
 			// STEP 5: Adjust cascade cols Width and Height
-			intMar = (($('#cardCasc').innerWidth() - 8 * gCardW) / 7);
+			doResponsiveLayout();
+		}
+
+		function doResponsiveLayout() {
+			var intMar = ( ($('#cardCasc').innerWidth() - 8 * gCardW) / 7 );
+
+			// STEP 1: Hide icons on smaller screens [RESPONSIVE]
+			if ( window.matchMedia('screen and (max-width: 736px)').matches || window.matchMedia('screen and (max-width: 1024px)').matches ) {
+				// Just remove these so they dont un-hide after drags
+				// FIX: This is tacky
+				$('.card .face, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center').remove();
+			}
+
+			// STEP 2: Distribute cacade cols
 			$('#cardCasc > div').each(function(i,col){
 				// W: (Dont add margin to final col/casc)
 				if ( i+1 < $('#cardCasc > div').length ) $(this).css('margin-right', intMar+'px');
@@ -471,13 +503,21 @@
 				gCardW = 65;
 				gCardH = 91;
 				CARD_OFFSET = 20;
-				console.log('later');
 			}
 			else if ( window.matchMedia('screen and (max-width: 1024px)').matches ) {
 				gCardW = 90;
 				gCardH = 126;
 				CARD_OFFSET = 40;
-				console.log('1024');
+			}
+			else if ( window.matchMedia('screen and (max-width: 1280px)').matches ) {
+				gCardW = 95;
+				gCardH = 133;
+				CARD_OFFSET = 50;
+			}
+			else {
+				gCardW = 120;
+				gCardH = 168;
+				CARD_OFFSET = 50;
 			}
 
 			// STEP 2: Dialog setup
@@ -486,12 +526,21 @@
 				autoOpen: false,
 			    draggable: false,
 			    resizable: false,
-				dialogClass: 'dialogYouWon',
+				dialogClass: 'dialogCool',
 				closeOnEscape: false,
 				width: ($(window).innerWidth() * 0.6),
 				height: ($(window).innerHeight() * 0.4)
 			});
 			$('#dialogMenu').dialog({
+				modal: true,
+				autoOpen: false,
+			    draggable: false,
+			    resizable: false,
+				dialogClass: 'dialogCool',
+				closeOnEscape: true,
+				width: ($(window).innerWidth() * 0.4)
+			});
+			$('#dialogOptions').dialog({
 				modal: true,
 				autoOpen: false,
 			    draggable: false,
@@ -508,20 +557,21 @@
 				tolerance:  'pointer',
 				drop:       function(event,ui){handleFounDrop(event,ui,$(this));}
 			});
-
 			$('#cardOpen .slot').droppable({
 				accept:     '.card',
 				hoverClass: 'hvr-pulse-grow-hover',
 				drop:       function(event,ui){ handleOpenDrop(event, ui, $(this)); }
 			});
-
 			$('#cardCasc > div').droppable({
 				accept:     '.card',
 				hoverClass: 'cascHover',
 				drop:       function(event,ui){ handleCascDrop(event, ui, $(this)); }
 			});
 
-			// STEP 3: Fill board
+			// STEP 4: Redraw on window resize (use a slight delay for PERF)
+			window.onresize = function(){ clearTimeout(gTimer); gTimer = setTimeout(doResponsiveLayout, 100); };
+
+			// STEP 4: Fill board
 			// TODO: have start button to do this
 			doFillBoard();
 		}
@@ -534,8 +584,15 @@
 	<div id="dialogMenu" style="display:none">
 		<div class="bigBtnBar">
 			<button onclick="$('#dialogMenu').dialog('close'); doFillBoard();">New Game</button>
-			<button onclick="$('#dialogMenu').dialog('close');">Options</button>
+			<button onclick="handleOptionsOpen()">Options</button>
 			<button onclick="$('#dialogMenu').dialog('close');">Resume</button>
+		</div>
+	</div>
+
+	<div id="dialogOptions" style="display:none">
+		<div class="bigBtnBar">
+			<div><label for="chkOptSound"><input id="chkOptSound" type="checkbox" checked="checked"> Sound</label></div>
+			<button onclick="handleOptionsClose()">Close</button>
 		</div>
 	</div>
 
@@ -551,7 +608,7 @@
 				<div><div class="red">♥</div><div class="blk">♠</div></div>
 				<div id="title">FREECELL</div>
 				<div><div class="blk">♣</div><div class="red">♦</div></div>
-				<button id="btnMenu" onclick="$('#dialogMenu').dialog('open')">MENU</button>
+				<button id="btnMenu" onclick="handleMenuBtn()">MENU</button>
 			</div>
 			<div id="cardOpen" style="width:45%"><div id="cardOpen1" class="slot"></div><div id="cardOpen2" class="slot"></div><div id="cardOpen3" class="slot"></div><div id="cardOpen4" class="slot"></div></div>
 		</div>
