@@ -16,6 +16,8 @@ body {
     background-size: 100% 100%;
 }
 div { box-sizing: border-box; }
+/* Remove annoying blue shadow border around buttons post-click - TODO: what to do for accessability */
+button:focus { outline:0 !important; }
 
 @keyframes neonGreen {
   from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #FFDD1B, 0 0 70px #FFDD1B, 0 0 80px #FFDD1B, 0 0 100px #FFDD1B, 0 0 150px #FFDD1B; }
@@ -25,6 +27,26 @@ div { box-sizing: border-box; }
     from { text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #fff, 0 0 40px #ff00de, 0 0 70px #ff00de, 0 0 80px #ff00de, 0 0 100px #ff00de, 0 0 150px #ff00de; }
       to { text-shadow: 0 0  5px #fff, 0 0 10px #fff, 0 0 15px #fff, 0 0 20px #ff00de, 0 0 35px #ff00de, 0 0 40px #ff00de, 0 0  50px #ff00de, 0 0 75px #ff00de; }
 }
+
+/* Pulse Grow */
+@-webkit-keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
+@keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
+.hvr-pulse-grow {
+    display: inline-block;
+    transform: translateZ(0);
+    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
+    backface-visibility: hidden;
+}
+.hvr-pulse-grow-hover {
+    animation-name: hvr-pulse-grow;
+    animation-duration: 0.3s;
+    animation-timing-function: linear;
+    animation-iteration-count: infinite;
+    animation-direction: alternate;
+}
+/* --- */
+
+/* --------------------------------------------------------------------------------------------- */
 
 /* jQuery UI Dialog */
 .ui-dialog-titlebar { display: none; }
@@ -50,8 +72,10 @@ div { box-sizing: border-box; }
     text-shadow:0px 1px 0px #5b8a3c;
 }
 
+/* --------------------------------------------------------------------------------------------- */
+
 .bigText {
-    font-size: 140px;
+    font-size: 10em;
     text-align: center;
     color: #BA01FF;
     font-family: Roboto; font-weight: 400;
@@ -63,14 +87,13 @@ div { box-sizing: border-box; }
 }
 .bigBtnBar button {
     width: 85%;
-    display: inline-block;
 	cursor: pointer;
     margin: 30px 0;
     font-size: 1.75em;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
 	background-color:#77b55a; background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
 	border-radius:10px; border:1px solid #4b8f29;
-	color:#ffffff; font-size:28px; font-weight:bold;
+	font-size:1.5em; font-weight:bold; color:#ffffff;
 	padding:20px 10px;
 	text-decoration:none; white-space: nowrap;
 	text-shadow:0px 1px 0px #5b8a3c;
@@ -81,26 +104,7 @@ div { box-sizing: border-box; }
 .bigBtnBar button:nth-child(3) { background:linear-gradient(to bottom, #15D418 0%,#17BC14 100%); border-color: #17BC14; }
 .bigBtnBar button:nth-child(4) { background:linear-gradient(to bottom, #921AD3 0%,#8415C4 100%); border-color: #8415C4; }
 
-/* Remove annoying blue shadow border around buttons post-click - TODO: what to do for accessability */
-button:focus { outline:0 !important; }
-
-/* Pulse Grow */
-@-webkit-keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
-@keyframes hvr-pulse-grow { to { transform: scale(1.1); } }
-.hvr-pulse-grow {
-    display: inline-block;
-    transform: translateZ(0);
-    box-shadow: 0 0 1px rgba(0, 0, 0, 0);
-    backface-visibility: hidden;
-}
-.hvr-pulse-grow-hover {
-    animation-name: hvr-pulse-grow;
-    animation-duration: 0.3s;
-    animation-timing-function: linear;
-    animation-iteration-count: infinite;
-    animation-direction: alternate;
-}
-/* --- */
+/* --------------------------------------------------------------------------------------------- */
 
 #playArea { padding:30px 60px; }
 #playArea > div { width: 100%; }
@@ -112,7 +116,6 @@ button:focus { outline:0 !important; }
 #topArea > div:last-child  { text-align: right; }
 
 #topArea > #cardOpen > div:last-child { margin-right: 0; }
-#topArea > #cardFoun > div { text-align: center; }
 
 #topArea > div#gameTitle {
     position: relative;
@@ -132,14 +135,12 @@ button:focus { outline:0 !important; }
 #topArea > div#gameTitle div.blk { color:black;   }
 #topArea > div#gameTitle div.red { color:#df0000; }
 
-#topArea > #cardFoun > div:last-child { margin-right: 0; }
-#topArea > #cardFoun > .slot > h1 {
+#cardFoun > div { text-align: center; }
+#cardFoun > div:last-child { margin-right: 0; }
+#cardFoun > .slot > h1 {
     margin:0;
-    font-family: 'Open Sans';
-    font-weight: 100;
-    font-size:15em;
+    font-family: 'Open Sans'; font-weight: 100; font-size: 15em; color:rgba(130,130,130,0.25);
     line-height:168px; vertical-align:middle;
-    color:rgba(130,130,130,0.25);
 }
 
 #btnMenu {
@@ -152,7 +153,7 @@ button:focus { outline:0 !important; }
 	background: linear-gradient(to bottom, #77d42a 5%, #5cb811 100%); background-color:#77d42a;
     border:1px solid #268a16; border-radius:6px;
     box-shadow: inset 0px 1px 0px 0px #caefab;
-    font-size: 0.4em; color: #306108; text-decoration: none; text-shadow:0px 2px 0px #aade7c;
+    font-size: 0.5em; color: #306108; text-decoration: none; text-shadow:0px 2px 0px #aade7c;
 }
 #btnMenu:hover { background:linear-gradient(to bottom, #5cb811 5%, #77d42a 100%); background-color:#5cb811; }
 
@@ -164,7 +165,7 @@ button:focus { outline:0 !important; }
 .card {
     cursor: move;
     display: inline-block;
-    background: linear-gradient(#fff,#d7d7d7);
+    background: linear-gradient(#fff,#c7c7c7);
     width: 120px; height: 168px;
     font-size: 7.5px; /* 7.5px = 120px */
     margin: 0; /* for droppabel - WIP */
@@ -194,51 +195,64 @@ h1, .card, div#gameTitle {
 }
 
 /* --------------------------------------------------------------------------------------------- */
-/* --------------------------------------------------------------------------------------------- */
 
-/* Responsive Rules: <1400= */
+/* Responsive Rules: 1400+=PC */
 @media only screen and (max-width: 1400px) {
     #playArea { padding:15px 30px; }
     #topArea > div#gameTitle { font-size: 1.5em; }
     #topArea > div#gameTitle > div#title { margin: 4px 0; }
     #topArea > div#gameTitle > div > div { font-size: 2em; }
 }
-@media only screen and (max-width: 1280px) {
-    #playArea { padding:15px 30px; }
-    #topArea > div#gameTitle { font-size: 1.5em; }
-    #topArea > div#gameTitle > div#title { margin: 4px 0; }
-    #topArea > div#gameTitle > div > div { font-size: 2em; }
 
-    .card, .slot, #cardCasc > div { width:95px; height:133px; font-size:5.94px; }
-    .card .corner { font-size:1.5em; }
-    .card .face, .card .face img, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center { visibility: hidden; }
-    .card .corner.top    { top: 0.6em; left: 0.5em; }
-    .card .corner.bottom { bottom: 0.6em; right:0.6em; }
-    .card .corner span { font-size: 4.5em; }
-    .card .corner.top, .card .corner.bottom { text-align: left; }
-}
-/* Responsive Rules: 1024=iPad(landscape) */
-@media only screen and (max-width: 1024px) {
-    #playArea { padding:15px 20px; }
-    #topArea > #cardFoun > .slot > h1 { line-height:126px; }
+/* Responsive Rules: 1280-1399=PC */
+@media only screen and (max-width: 1280px) {
+    .card, .slot, #cardCasc > div { width:95px; height:133px; font-size:8px; }
+    #topArea > #cardFoun > .slot > h1 { line-height:133px; }
+
+    #playArea { padding: 30px; }
     #topArea > div#gameTitle { font-size: 1.5em; }
     #topArea > div#gameTitle > div#title { margin: 3px 0; }
     #topArea > div#gameTitle > div > div { font-size: 1.2em; }
+    #topArea > div#gameTitle #btnMenu { font-size: 0.6em; padding: 2px; }
 
-    .card, .slot, #cardCasc > div { width:90px; height:126px; font-size:8px; }
-    .card .corner { font-size:1.5em; }
-    .card .face, .card .face img, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center { visibility: hidden; }
-    .card .corner span { font-size: 4.5em; margin-top:0.4em; }
-    .card .corner.top    { top: 0.3em; left: 1.0em; text-align: left; }
-    .card .corner.bottom { bottom: 0.5em; right:0.8em; text-align:right; }
-    .card .corner.bottom span { text-align:center; transform:rotate(180deg); }
-    .card .corner.bottom span.number { padding-top:0.5em; text-align:right; }
+    .card .face, .card .face img, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center { visibility: hidden !important; }
+    .card .corner                    { font-size: 1.5em; }
+    .card .corner span               { font-size: 4.5em; }
+    .card .corner.top                { top: 1em; left: 1em; text-align: left;  }
+    .card .corner.top span           { font-size: 3.5em; margin-bottom: 2.25em; transform:rotate(180deg); }
+    .card .corner.top span.number    { font-size: 2.0em; transform:rotate(0deg); }
+    .card .corner.bottom             { bottom: 1em; right: 1em; text-align: right; }
+    .card .corner.bottom span        { font-size: 3.5em; text-align:center; margin-bottom: 2.25em; transform:rotate(180deg); }
+    .card .corner.bottom span.number { font-size: 2.0em; text-align:left; padding-top:0em; transform:rotate(0deg); }
 }
 
-/* Responsive Rules: 736=iPhone6Plus(landscape) */
+/* Responsive Rules: 1080=tablets (iPad landscape=1024) */
+@media only screen and (max-width: 1080px) {
+    .card, .slot, #cardCasc > div { width:90px; height:126px; font-size:8px; }
+    #topArea > #cardFoun > .slot > h1 { line-height:126px; }
+
+    #playArea { padding: 20px; }
+    #topArea > div#gameTitle > div > div { font-size: 1em; text-shadow:none; }
+
+    .card .corner.top span           { margin-bottom: 2.0em; }
+    .card .corner.bottom span        { margin-bottom: 1.9em; }
+}
+
+@media only screen and (max-width: 1020px) {
+    /* TODO */
+}
+
+/* Responsive Rules: 768=tablet 736=iPhone6Plus(landscape) */
 @media only screen and (max-width: 736px) {
-    #playArea { padding:15px; }
     .card, .slot, #cardCasc > div { width:65px; height:91px; font-size:4.06px; }
+    #topArea > #cardFoun > .slot > h1 { line-height:91px; }
+
+    #playArea { padding:15px; }
+    #topArea { margin-bottom: 15px; }
+    #topArea > div#gameTitle { font-size: 1.25em; }
+    #topArea > div#gameTitle > div#title { margin: 1px 0; }
+    #topArea > div#gameTitle > div > div { font-size: 1em; text-shadow:none; }
+
     .slot { margin: 0 10px 0 0; }
     .card .corner { font-size:1.5em; }
     .card .face, .card .face img, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center { visibility: hidden; }
@@ -246,11 +260,4 @@ h1, .card, div#gameTitle {
     .card .corner.bottom { bottom: 0.6em; right:0.6em; }
     .card .corner span { font-size: 4.5em; }
     .card .corner.top, .card .corner.bottom { text-align: left; }
-
-    /* width:95px; = font-size:5.9375px */
-    #topArea { margin-bottom: 15px; }
-    #topArea > #cardFoun > .slot > h1 { line-height:91px; }
-    #topArea > div#gameTitle { font-size: 1.25em; }
-    #topArea > div#gameTitle span { font-size: 2em; }
-    #btnMenu { margin-top: 5px; }
 }
