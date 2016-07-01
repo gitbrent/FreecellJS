@@ -9,6 +9,10 @@
  * http://www.opensource.org/licenses/mit-license.php
  */
 
+@font-face { font-family: 'Open Sans Light'; src: url('../fonts/OpenSans-Light.ttf') format('truetype'); }
+@font-face { font-family: 'Roboto Thin';     src: url('../fonts/Roboto-Thin.ttf')    format('truetype'); }
+@font-face { font-family: 'Roboto';          src: url('../fonts/Roboto-Light.ttf')   format('truetype'); }
+
 body {
     margin: 0px;
     overflow: hidden;
@@ -139,7 +143,7 @@ button:focus { outline:0 !important; }
 #cardFoun > div:last-child { margin-right: 0; }
 #cardFoun > .slot > h1 {
     margin:0;
-    font-family: 'Open Sans'; font-weight: 100; font-size: 15em; color:rgba(130,130,130,0.25);
+    font-family: 'Open Sans Light'; font-size: 15em; color:rgba(130,130,130,0.25);
     line-height:168px; vertical-align:middle;
 }
 
@@ -206,8 +210,9 @@ h1, .card, div#gameTitle {
 
 /* Responsive Rules: 1280-1399=PC */
 @media only screen and (max-width: 1280px) {
-    .card, .slot, #cardCasc > div { width:95px; height:133px; font-size:8px; }
     #topArea > #cardFoun > .slot > h1 { line-height:133px; }
+    .card, .slot, #cardCasc > div { width:95px; height:133px; font-size:8px; font-family: Roboto; }
+    .card .ten { margin-left: -6px; }
 
     #playArea { padding: 30px; }
     #topArea > div#gameTitle { font-size: 1.5em; }
@@ -219,27 +224,41 @@ h1, .card, div#gameTitle {
     .card .corner                    { font-size: 1.5em; }
     .card .corner span               { font-size: 4.5em; }
     .card .corner.top                { top: 1em; left: 1em; text-align: left;  }
-    .card .corner.top span           { font-size: 3.5em; margin-bottom: 2.25em; transform:rotate(180deg); }
+    .card .corner.top span           { font-size: 2.5em; margin-bottom: 2.25em; transform:rotate(180deg); }
     .card .corner.top span.number    { font-size: 2.0em; transform:rotate(0deg); }
     .card .corner.bottom             { bottom: 1em; right: 1em; text-align: right; }
-    .card .corner.bottom span        { font-size: 3.5em; text-align:center; margin-bottom: 2.25em; transform:rotate(180deg); }
+    .card .corner.bottom span        { font-size: 2.5em; text-align:center; margin-bottom: 2.25em; transform:rotate(180deg); }
     .card .corner.bottom span.number { font-size: 2.0em; text-align:left; padding-top:0em; transform:rotate(0deg); }
 }
 
 /* Responsive Rules: 1080=tablets (iPad landscape=1024) */
 @media only screen and (max-width: 1080px) {
-    .card, .slot, #cardCasc > div { width:90px; height:126px; font-size:8px; }
     #topArea > #cardFoun > .slot > h1 { line-height:126px; }
+    .card, .slot, #cardCasc > div { width:90px; height:126px; font-size:8px; }
 
     #playArea { padding: 20px; }
-    #topArea > div#gameTitle > div > div { font-size: 1em; text-shadow:none; }
+    #topArea > div#gameTitle > div#title { margin: -2px 0; }
+    #topArea > div#gameTitle > div > div { font-size: 1.5em; text-shadow:none; }
 
-    .card .corner.top span           { margin-bottom: 2.0em; }
-    .card .corner.bottom span        { margin-bottom: 1.9em; }
+    .card .corner.top span, .card .corner.bottom span { margin-bottom: 1.6em; }
+    .card .corner.top span.number, .card .corner.bottom span.number { font-size: 2.3em; }
 }
 
 @media only screen and (max-width: 1020px) {
-    /* TODO */
+
+    #topArea > div#gameTitle { display: none; }
+    /* ^^^ TODO ^^^ */
+
+    #topArea > #cardFoun > .slot > h1 { line-height:126px; }
+    .card, .slot, #cardCasc > div { width:90px; height:126px; font-size:8px; }
+}
+
+@media only screen and (max-width: 900px) {
+    #topArea > #cardFoun > .slot > h1 { line-height:112px; font-size: 12em; }
+    .card, .slot, #cardCasc > div { width:80px; height:112px; font-size:8px; }
+
+    .card .corner.top span, .card .corner.bottom span { margin-bottom: 1.2em; }
+    .card .corner.top span.number, .card .corner.bottom span.number { font-size: 2.3em; }
 }
 
 /* Responsive Rules: 768=tablet 736=iPhone6Plus(landscape) */
