@@ -124,12 +124,12 @@ button:focus { outline:0 !important; }
 #topArea > div#gameTitle {
     position: relative;
     padding: 5px 10px;
-    font-family: Roboto; font-size: 2.2em; font-weight: 100;
+    font-family: Suit; font-size: 2.2em; font-weight: 100;
     text-shadow: 2px 2px 3px #333;
     color: #88dd88;
     vertical-align: top;
 }
-#topArea > div#gameTitle > div#title { margin: 2px 0 0 0; }
+#topArea > div#gameTitle > div#title { font-family: Roboto; margin: 2px 0 0 0; }
 #topArea > div#gameTitle > div > div {
     display: inline-block; width: 50%;
     font-size: 1em; line-height: 1em;
@@ -211,7 +211,7 @@ h1, .card, div#gameTitle {
 /* Responsive Rules: 1280-1399=PC */
 @media only screen and (max-width: 1280px) {
     #topArea > #cardFoun > .slot > h1 { line-height:133px; }
-    .card, .slot, #cardCasc > div { width:95px; height:133px; font-size:8px; font-family: Roboto; }
+    .card, .slot, #cardCasc > div { width:95px; height:133px; font-size:8px; }
     .card .ten { margin-left: -6px; }
 
     #playArea { padding: 30px; }
@@ -225,10 +225,10 @@ h1, .card, div#gameTitle {
     .card .corner span               { font-size: 4.5em; }
     .card .corner.top                { top: 1em; left: 1em; text-align: left;  }
     .card .corner.top span           { font-size: 2.5em; margin-bottom: 2.25em; transform:rotate(180deg); }
-    .card .corner.top span.number    { font-size: 2.0em; transform:rotate(0deg); }
+    .card .corner.top span.number    { font-size: 2.0em; transform:rotate(0deg); font-family: Roboto; }
     .card .corner.bottom             { bottom: 1em; right: 1em; text-align: right; }
     .card .corner.bottom span        { font-size: 2.5em; text-align:center; margin-bottom: 2.25em; transform:rotate(180deg); }
-    .card .corner.bottom span.number { font-size: 2.0em; text-align:left; padding-top:0em; transform:rotate(0deg); }
+    .card .corner.bottom span.number { font-size: 2.0em; text-align:left; padding-top:0em; transform:rotate(0deg); font-family: Roboto; }
 }
 
 /* Responsive Rules: 1080=tablets (iPad landscape=1024) */
