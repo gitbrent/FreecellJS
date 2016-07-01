@@ -23,10 +23,6 @@
 	<meta name="description" content="HTML5 Freecell Card Game for iPad/Android and Desktop Browsers">
 	<meta name="keywords" content="iOS web app, iPad game, mobile web app, html5 card game, free mobile game, free mobile card game">
 
-	<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Play'>
-	<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Roboto:100'>
-	<link rel='stylesheet' type='text/css' href='https://fonts.googleapis.com/css?family=Roboto:400'>
-	<link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=Open+Sans">
 	<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.min.css">
 	<link rel="stylesheet" type="text/css" href="css/playingcards.css">
 	<link rel="stylesheet" type="text/css" href="css/FreecellJS.css">
@@ -402,12 +398,14 @@
 					var objNode = $('<div id="card'+ suit.name.substring(0,1) + card.numb +'" class="card" '
 						+ ' data-suit="'+suit.name+'" data-numb="'+card.numb+'">'
 						+ '<div class="card-'+card.name+' '+suit.name+'">'
-						+ '<div class="corner top"><span class="number">'+card.numb+'</span><span>'+suit.logo+'</span></div>'
+						+ '<div class="corner top">'
+						+ '<span class="number'+ (card.numb == '10' ? ' ten':'') +'">'+card.numb+'</span><span>'+suit.logo+'</span></div>'
 						+ (card.class == 'suit'
 							? '<span class="suit top_center">'+suit.logo+'</span><span class="suit bottom_center">'+suit.logo+'</span>'
 							: '<span class="face middle_center"><img src="img/faces/face-'+card.name+'-'+suit.name+'.png"></span>'
 						)
-						+ '<div class="corner bottom"><span class="number">'+card.numb+'</span><span>'+suit.logo+'</span></div>'
+						+ '<div class="corner bottom">'
+						+ '<span class="number'+ (card.numb == '10' ? ' ten':'') +'">'+card.numb+'</span><span>'+suit.logo+'</span></div>'
 						+ '</div>'
 						+ '</div>');
 					// B:
@@ -484,6 +482,11 @@
 				gCardH = 91;
 				CARD_OFFSET = 20;
 			}
+			else if ( window.matchMedia('screen and (max-width: 900px)').matches ) {
+				gCardW = 80;
+				gCardH = 112;
+				CARD_OFFSET = 50;
+			}
 			else if ( window.matchMedia('screen and (max-width: 1080px)').matches ) {
 				gCardW = 90;
 				gCardH = 126;
@@ -556,7 +559,7 @@
 			    resizable: false,
 				dialogClass: 'dialogCool',
 				closeOnEscape: true,
-				width: ($(window).innerWidth() * 0.3)
+				width: ($(window).innerWidth() * 0.4)
 			});
 			$('#dialogOptions').dialog({
 				modal: true,
