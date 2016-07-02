@@ -88,10 +88,8 @@
   position: absolute;
   text-align: center;
 }
-.card .suit.top_center {
-  left: 1.0482758620689656em;
-  top: 0.3310344827586207em;
-}
+/* gitbrent */
+.card .suit.top_center { left: 1em; top: 0.2em; }
 .card .suit.top_left {
   left: 0.41379310344827586em;
   top: 0.3310344827586207em;
@@ -160,8 +158,9 @@
   -webkit-transform: rotate(180deg);
   transform: rotate(180deg);
 }
+/* gitbrent */
 .card .suit.bottom_center {
-  bottom: 0.3310344827586207em;
+  bottom: 0.2310344827586207em;
   left: 1.0482758620689656em;
   -ms-transform: rotate(180deg);
   -moz-transform: rotate(180deg);

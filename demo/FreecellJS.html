@@ -477,44 +477,21 @@
 
 		function doRespConfig() {
 			// STEP 1: Responsive Setup
-			if      ( window.matchMedia('screen and (max-width: 736px)').matches ) {
-				gCardW = 65;
-				gCardH = 91;
-				CARD_OFFSET = 20;
-			}
-			else if ( window.matchMedia('screen and (max-width: 900px)').matches ) {
-				gCardW = 80;
-				gCardH = 112;
-				CARD_OFFSET = 50;
-			}
-			else if ( window.matchMedia('screen and (max-width: 1080px)').matches ) {
-				gCardW = 90;
-				gCardH = 126;
-				CARD_OFFSET = 50;
-			}
-			else if ( window.matchMedia('screen and (max-width: 1280px)').matches ) {
-				gCardW = 95;
-				gCardH = 133;
-				CARD_OFFSET = 50;
-			}
-			else {
-				gCardW = 120;
-				gCardH = 168;
-				CARD_OFFSET = 50;
-			}
+			if      ( window.matchMedia('screen and (max-width: 700px)').matches  ) { CARD_OFFSET = 20; gCardW =  65; gCardH =  91; }
+			else if ( window.matchMedia('screen and (max-width: 800px)').matches  ) { CARD_OFFSET = 40; gCardW =  70; gCardH =  98; }
+			else if ( window.matchMedia('screen and (max-width: 900px)').matches  ) { CARD_OFFSET = 50; gCardW =  80; gCardH = 112; }
+			else if ( window.matchMedia('screen and (max-width: 1080px)').matches ) { CARD_OFFSET = 50; gCardW =  90; gCardH = 126; }
+			else if ( window.matchMedia('screen and (max-width: 1280px)').matches ) { CARD_OFFSET = 50; gCardW =  95; gCardH = 133; }
+			else                                                                    { CARD_OFFSET = 50; gCardW = 120; gCardH = 168; }
 		}
 
 		function doRespLayout() {
 			// STEP 1: Responsive Setup
 			doRespConfig();
 
-			// STEP 2: Distribute cascade cols
+			// STEP 2: Re-fan cards to handle varying offsets as resizes occur
 			$('#cardCasc > div').each(function(i,col){
-				// A: (Dont add margin to final col/casc)
-				if ( i+1 < $('#cardCasc > div').length ) $(this).css('margin-right', ( ($('#cardCasc').innerWidth() - (8 * gCardW)) / 7 )+'px');
-
-				// B: Cards arent block-type so cascade is tiny! Make it hit bottom of window (-10) so it'll be a good droppable
-				$(this).css('height', ($(window).innerHeight() - $(this).offset().top - 10)+'px');
+				$(col).find('.card').each(function(idx,card){ $(card).css('top','-'+(idx*(gCardH-CARD_OFFSET))+'px'); });
 			});
 		}
 
@@ -602,14 +579,28 @@
 
 	<div id="playArea">
 		<div id="topArea">
-			<div id="cardFoun" style="width:45%"><div id="cardFoun1" class="slot"><h1>A</h1></div><div id="cardFoun2" class="slot"><h1>A</h1></div><div id="cardFoun3" class="slot"><h1>A</h1></div><div id="cardFoun4" class="slot"><h1>A</h1></div></div>
+			<div id="cardFoun" style="width:45%">
+				<div id="cardFounCont">
+					<div><div id="cardFoun1" class="slot"><h1>A</h1></div></div>
+					<div><div id="cardFoun2" class="slot"><h1>A</h1></div></div>
+					<div><div id="cardFoun3" class="slot"><h1>A</h1></div></div>
+					<div><div id="cardFoun4" class="slot"><h1>A</h1></div></div>
+				</div>
+			</div>
 			<div id="gameTitle" style="width:10%">
 				<div><div class="red">♥</div><div class="blk">♠</div></div>
 				<div id="title">FREECELL</div>
 				<div><div class="blk">♣</div><div class="red">♦</div></div>
 				<button id="btnMenu" onclick="handleMenuBtn()">MENU</button>
 			</div>
-			<div id="cardOpen" style="width:45%"><div id="cardOpen1" class="slot"></div><div id="cardOpen2" class="slot"></div><div id="cardOpen3" class="slot"></div><div id="cardOpen4" class="slot"></div></div>
+			<div id="cardOpen" style="width:45%">
+				<div id="cardOpenCont">
+					<div><div id="cardOpen1" class="slot"></div></div>
+					<div><div id="cardOpen2" class="slot"></div></div>
+					<div><div id="cardOpen3" class="slot"></div></div>
+					<div><div id="cardOpen4" class="slot"></div></div>
+				</div>
+			</div>
 		</div>
 		<div id="cardCasc"><div id="cardCasc1"></div><div id="cardCasc2"></div><div id="cardCasc3"></div><div id="cardCasc4"></div><div id="cardCasc5"></div><div id="cardCasc6"></div><div id="cardCasc7"></div><div id="cardCasc8"></div></div>
 	</div>
