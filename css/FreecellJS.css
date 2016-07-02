@@ -139,13 +139,19 @@ button:focus { outline:0 !important; }
 #topArea > div#gameTitle div.blk { color:black;   }
 #topArea > div#gameTitle div.red { color:#df0000; }
 
-#cardFoun > div { text-align: center; }
-#cardFoun > div:last-child { margin-right: 0; }
-#cardFoun > .slot > h1 {
-    margin:0;
+#cardFoun > div > div { text-align: left; }
+#cardFoun > div > div:last-child { margin-right: 0; }
+#cardFoun .slot h1 {
+    margin: 0;
+    text-align: center;
     font-family: 'Open Sans Light'; font-size: 15em; color:rgba(130,130,130,0.25);
     line-height:168px; vertical-align:middle;
 }
+#cardFounCont { display:table; width:100%; }
+#cardFounCont > div { display:table-cell; width:25%; text-align:left; }
+
+#cardOpenCont { display:table; width:100%; }
+#cardOpenCont > div { display:table-cell; width:25%; text-align:right; }
 
 #btnMenu {
     position: absolute;
@@ -162,8 +168,9 @@ button:focus { outline:0 !important; }
 #btnMenu:hover { background:linear-gradient(to bottom, #5cb811 5%, #77d42a 100%); background-color:#5cb811; }
 
 /* ---------- Card Casc ---------- */
-#cardCasc { position: relative; width: 100%; }
-#cardCasc > div { width:120px; height:50px; display:inline-block; text-align:left; vertical-align:top; }
+#cardCasc { display:table; width: 100%; }
+#cardCasc > div { display:table-cell; width:14%; text-align:left; vertical-align:top; }
+#cardCasc > div:last-child { width:10%; text-align:right; }
 
 /* ---------- Card/Slot ---------- */
 .card {
@@ -181,7 +188,7 @@ button:focus { outline:0 !important; }
     position: relative;
     display: inline-block;
     width: 120px; height: 168px;
-    margin: 0 20px 0 0;
+    margin: 0;
     border-radius: 0.8em;
     background: rgba(0, 50, 0, 0.75);
     box-shadow: inset 0px 0px 3px 0px #ddffdd;
@@ -202,7 +209,7 @@ h1, .card, div#gameTitle {
 
 /* Responsive Rules: 1400+=PC */
 @media only screen and (max-width: 1400px) {
-    #playArea { padding:15px 30px; }
+    #playArea { padding: 30px; }
     #topArea > div#gameTitle { font-size: 1.5em; }
     #topArea > div#gameTitle > div#title { margin: 4px 0; }
     #topArea > div#gameTitle > div > div { font-size: 2em; }
@@ -210,11 +217,11 @@ h1, .card, div#gameTitle {
 
 /* Responsive Rules: 1280-1399=PC */
 @media only screen and (max-width: 1280px) {
-    #topArea > #cardFoun > .slot > h1 { line-height:133px; }
-    .card, .slot, #cardCasc > div { width:95px; height:133px; font-size:8px; }
+    #playArea { padding: 30px; }
+    #topArea > #cardFoun .slot h1 { line-height:133px; }
+    .card, .slot { width:95px; height:133px; font-size:8px; }
     .card .ten { margin-left: -6px; }
 
-    #playArea { padding: 30px; }
     #topArea > div#gameTitle { font-size: 1.5em; }
     #topArea > div#gameTitle > div#title { margin: 3px 0; }
     #topArea > div#gameTitle > div > div { font-size: 1.2em; }
@@ -223,25 +230,27 @@ h1, .card, div#gameTitle {
     .card .face, .card .face img, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center { visibility: hidden !important; }
     .card .corner                    { font-size: 1.5em; }
     .card .corner span               { font-size: 4.5em; }
-    .card .corner.top                { top: 1em; left: 1em; text-align: left;  }
-    .card .corner.top span           { font-size: 2.5em; margin-bottom: 2.25em; transform:rotate(180deg); }
-    .card .corner.top span.number    { font-size: 2.0em; transform:rotate(0deg); font-family: Roboto; }
+    .card .corner.top                { top:    1em; left:  1em; text-align: left;  }
     .card .corner.bottom             { bottom: 1em; right: 1em; text-align: right; }
-    .card .corner.bottom span        { font-size: 2.5em; text-align:center; margin-bottom: 2.25em; transform:rotate(180deg); }
-    .card .corner.bottom span.number { font-size: 2.0em; text-align:left; padding-top:0em; transform:rotate(0deg); font-family: Roboto; }
+    .card .corner.top    span        { font-family: Suit;   font-size: 3em; margin-bottom: 2.25em; transform:rotate(180deg); }
+    .card .corner.bottom span        { font-family: Suit;   font-size: 3em; margin-bottom: 2.25em; transform:rotate(180deg); text-align:center; }
+    .card .corner.top    span.number { font-family: Roboto; font-size: 2em; transform:rotate(0deg); }
+    .card .corner.bottom span.number { font-family: Roboto; font-size: 2em; text-align:left; padding-top:0em; transform:rotate(0deg); }
 }
 
 /* Responsive Rules: 1080=tablets (iPad landscape=1024) */
 @media only screen and (max-width: 1080px) {
-    #topArea > #cardFoun > .slot > h1 { line-height:126px; }
-    .card, .slot, #cardCasc > div { width:90px; height:126px; font-size:8px; }
-
     #playArea { padding: 20px; }
+    #topArea > #cardFoun .slot h1 { line-height:126px; }
+    .card, .slot { width:90px; height:126px; font-size:8px; }
+
     #topArea > div#gameTitle > div#title { margin: -2px 0; }
     #topArea > div#gameTitle > div > div { font-size: 1.5em; text-shadow:none; }
 
-    .card .corner.top span, .card .corner.bottom span { margin-bottom: 1.6em; }
-    .card .corner.top span.number, .card .corner.bottom span.number { font-size: 2.3em; }
+    .card .corner.top    span,
+    .card .corner.bottom span { margin-bottom: 1.6em; }
+    .card .corner.top    span.number,
+    .card .corner.bottom span.number { font-size: 2.3em; }
 }
 
 @media only screen and (max-width: 1020px) {
@@ -249,22 +258,35 @@ h1, .card, div#gameTitle {
     #topArea > div#gameTitle { display: none; }
     /* ^^^ TODO ^^^ */
 
-    #topArea > #cardFoun > .slot > h1 { line-height:126px; }
-    .card, .slot, #cardCasc > div { width:90px; height:126px; font-size:8px; }
+    #topArea > #cardFoun .slot h1 { line-height:126px; }
+    .card, .slot { width:90px; height:126px; font-size:8px; }
 }
 
 @media only screen and (max-width: 900px) {
-    #topArea > #cardFoun > .slot > h1 { line-height:112px; font-size: 12em; }
-    .card, .slot, #cardCasc > div { width:80px; height:112px; font-size:8px; }
+    #topArea > #cardFoun .slot h1 { line-height:98px; font-size: 11em; }
+    .card, .slot { height:98px; width:70px; font-size:8px; }
 
-    .card .corner.top span, .card .corner.bottom span { margin-bottom: 1.2em; }
-    .card .corner.top span.number, .card .corner.bottom span.number { font-size: 2.3em; }
+    .card .corner        { font-size: 1.3em; }
+    .card .corner.top    span,
+    .card .corner.bottom span { margin-bottom: 1.5em; }
+    .card .corner.top    span.number,
+    .card .corner.bottom span.number { font-size: 2em; }
 }
 
-/* Responsive Rules: 768=tablet 736=iPhone6Plus(landscape) */
-@media only screen and (max-width: 736px) {
-    .card, .slot, #cardCasc > div { width:65px; height:91px; font-size:4.06px; }
-    #topArea > #cardFoun > .slot > h1 { line-height:91px; }
+@media only screen and (max-width: 800px) {
+    #topArea > #cardFoun .slot h1 { line-height:99px; }
+    .card, .slot { width:70px; height:98px; font-size:8px; }
+
+    .card .corner        { font-size: 1.3em; }
+    .card .corner.top    span,
+    .card .corner.bottom span { margin-bottom: 1.5em; }
+    .card .corner.top    span.number,
+    .card .corner.bottom span.number { font-size: 2em; }
+}
+
+@media only screen and (max-width: 700px) {
+    #topArea > #cardFoun .slot h1 { line-height:91px; }
+    .card, .slot { width:65px; height:91px; font-size:4px; }
 
     #playArea { padding:15px; }
     #topArea { margin-bottom: 15px; }
@@ -272,11 +294,18 @@ h1, .card, div#gameTitle {
     #topArea > div#gameTitle > div#title { margin: 1px 0; }
     #topArea > div#gameTitle > div > div { font-size: 1em; text-shadow:none; }
 
-    .slot { margin: 0 10px 0 0; }
     .card .corner { font-size:1.5em; }
     .card .face, .card .face img, .card .suit.top_center, .card .suit.middle_center, .card .suit.bottom_center { visibility: hidden; }
     .card .corner.top    { top: 0.6em; left: 0.5em; }
     .card .corner.bottom { bottom: 0.6em; right:0.6em; }
     .card .corner span { font-size: 4.5em; }
     .card .corner.top, .card .corner.bottom { text-align: left; }
+}
+
+@media only screen and (max-width: 425px) {
+    #topArea > #cardFoun .slot h1 { line-height:70px; }
+    .card, .slot { width:50px; height:70px; font-size:4px; }
+}
+
+@media only screen and (max-width: 375px) {
 }
