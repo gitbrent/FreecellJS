@@ -13,15 +13,15 @@
 	|  http://www.opensource.org/licenses/mit-license.php
 	|  ******************************************************************************/
 	-->
-	<title>Freecell-JS :: Free HTML5 Card Game</title>
+	<title>Freecell-JS :: Online/Offline Freecell Solitaire Card Game</title>
 	<link rel="icon" href="img/favicon.png">
 	<link rel="apple-touch-icon" href="img/favicon.png">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	<meta name="author" content="https://github.com/gitbrent/">
 	<meta name="viewport" content="width=device-width, height=device-height, initial-scale=1.0, user-scalable=no">
-	<meta name="description" content="HTML5 Freecell Card Game for iPad/Android and Desktop Browsers">
-	<meta name="keywords" content="iOS web app, iPad game, mobile web app, html5 card game, free mobile game, free mobile card game">
+	<meta name="description" content="HTML5 Freecell Solitaire Card Game for iPad/Android and Desktop Web Browsers">
+	<meta name="keywords" content="Freecell Solitaire Card Game, iOS web app, iPad game, mobile web app, html5 card game, free mobile game, free mobile card game">
 
 	<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.min.css">
 	<link rel="stylesheet" type="text/css" href="css/playingcards.css">
@@ -92,8 +92,6 @@
 			K: { cascDrop:'Q' , founDrop:''  }
 		};
 		// VARIABLES
-		var gCardW = 120;
-		var gCardH = 168;
 		var gTimer;
 
 		// GAME SETUP
@@ -202,7 +200,7 @@
 
 			// STEP 3: Turn off this slot until it frees up again
 			if ( !gGameOpts.cheatUnlimOpen ) drop.droppable('disable');
-			else $.each(drop.children('.card'), function(i,card){ $(card).css('position','relative').css('top',i*-1*(gCardH-20)+'px').css('left','0px');});
+			else $.each(drop.children('.card'), function(i,card){ $(card).css('position','relative').css('top',i*-1*($(card).height()-20)+'px').css('left','0px');});
 
 			// STEP 4: Reset draggable params (esp. helper as prev one from cascades does things we no longer want to do)
 			var strNeeded = $(drop).attr('id');
@@ -244,7 +242,7 @@
 				card.draggable('option', 'revert', false);
 				// B: "Grab"/Detach/Append CARD
 				var intTop = ( $(drop).children().length > 0 )
-					? Number($(drop).children().last().css('top').replace('px','')) - (gCardH - CARD_OFFSET) : 0;
+					? Number($(drop).children().last().css('top').replace('px','')) - ($('.card:first-child').height() - CARD_OFFSET) : 0;
 				//ui.draggable.hide().detach().appendTo(drop).show('fast').removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
 				card.detach().appendTo(drop).removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
 				// C: Unhide the card that we hid when we built draggable container
@@ -363,7 +361,6 @@
 			// A: Build container and fill with cards selected
 			var container = $('<div/>').attr('id', 'draggingContainer').addClass('cardCont');
 			container.css( 'position', 'absolute' );
-			container.css( 'width', gCardW+'px' );
 			container.css( 'z-index', '1000' );
 			container.css( 'top' , $(this).offset().top +'px' );
 			container.css( 'left', $(this).offset().left+'px' );
@@ -432,7 +429,7 @@
 					card.css('top',  (i%2 == 0 ? '-1000px' : '1000px') );
 
 					// Append CARD using animation
-					$('#cardCasc'+intCol).append( card.animate({ left:0, top:-($('#cardCasc'+intCol+' .card').length * (gCardH-CARD_OFFSET)) + 'px' }, (i*1000/52) ) );
+					$('#cardCasc'+intCol).append( card.animate({ left:0, top:-($('#cardCasc'+intCol+' .card').length * ($('.card:first-child').height()-CARD_OFFSET)) + 'px' }, (i*1000/52) ) );
 
 					// Fill cascade cols in round-robin order
 					if (intCol>=8) { intCol = 0; intTop = 0; }
@@ -452,7 +449,7 @@
 				handleCardDblClick($(this));
 			});
 
-			// STEP 5: Adjust cascade cols Width and Height
+			// STEP 5: Adjust card fanning offset
 			doRespLayout();
 		}
 
@@ -477,12 +474,9 @@
 
 		function doRespConfig() {
 			// STEP 1: Responsive Setup
-			if      ( window.matchMedia('screen and (max-width: 700px)').matches  ) { CARD_OFFSET = 20; gCardW =  65; gCardH =  91; }
-			else if ( window.matchMedia('screen and (max-width: 800px)').matches  ) { CARD_OFFSET = 40; gCardW =  70; gCardH =  98; }
-			else if ( window.matchMedia('screen and (max-width: 900px)').matches  ) { CARD_OFFSET = 50; gCardW =  80; gCardH = 112; }
-			else if ( window.matchMedia('screen and (max-width: 1080px)').matches ) { CARD_OFFSET = 50; gCardW =  90; gCardH = 126; }
-			else if ( window.matchMedia('screen and (max-width: 1280px)').matches ) { CARD_OFFSET = 50; gCardW =  95; gCardH = 133; }
-			else                                                                    { CARD_OFFSET = 50; gCardW = 120; gCardH = 168; }
+			if      ( $(window).innerWidth() < 800 ) CARD_OFFSET = 30;
+			else if ( $(window).innerWidth() < 900 ) CARD_OFFSET = 40;
+			else CARD_OFFSET = 50;
 		}
 
 		function doRespLayout() {
@@ -491,7 +485,7 @@
 
 			// STEP 2: Re-fan cards to handle varying offsets as resizes occur
 			$('#cardCasc > div').each(function(i,col){
-				$(col).find('.card').each(function(idx,card){ $(card).css('top','-'+(idx*(gCardH-CARD_OFFSET))+'px'); });
+				$(col).find('.card').each(function(idx,card){ $(card).css('top','-'+(idx*($('.card:first-child').height()-CARD_OFFSET))+'px'); });
 			});
 		}
 
