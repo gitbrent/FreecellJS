@@ -23,6 +23,8 @@
 	<meta name="description" content="HTML5 Freecell Solitaire Card Game for iPad/Android and Desktop Web Browsers">
 	<meta name="keywords" content="Freecell Solitaire Card Game, iOS web app, iPad game, mobile web app, html5 card game, free mobile game, free mobile card game">
 
+	<link href='https://fonts.googleapis.com/css?family=Cinzel+Decorative:700' rel='stylesheet' type='text/css'>
+
 	<link rel="stylesheet" type="text/css" href="js/jquery-ui-1.11.4/jquery-ui.min.css">
 	<link rel="stylesheet" type="text/css" href="css/playingcards.css">
 	<link rel="stylesheet" type="text/css" href="css/FreecellJS.css">
@@ -92,6 +94,7 @@
 			K: { cascDrop:'Q' , founDrop:''  }
 		};
 		// VARIABLES
+		var gAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
 		var gTimer;
 
 		// GAME SETUP
@@ -106,10 +109,10 @@
 
 			// SETUP: Define / Start async load of sounds files
 			var gGameSounds = {};
-			gGameSounds.cardFlip    = new Audio("sounds/cardFlip.ogg");
-			gGameSounds.cardShuffle = new Audio("sounds/shuffle.ogg");
-			gGameSounds.crowdCheer  = new Audio("sounds/CrowdCheer.mp3");
-			gGameSounds.sadTrombone = new Audio("sounds/sadTrombone.ogg");
+			gGameSounds.cardFlip    = { buffer:null, url:"sounds/cardFlip.ogg" };
+			gGameSounds.cardShuffle = { buffer:null, url:"sounds/shuffle.ogg" };
+			gGameSounds.crowdCheer  = { buffer:null, url:"sounds/crowdCheer.mp3" };
+			gGameSounds.sadTrombone = { buffer:null, url:"sounds/sadTrombone.ogg" };
 		}
 
 		// ==============================================================================================
@@ -145,7 +148,7 @@
 			// ------------------------------------------------------------------------
 
 			// STEP 1: VFX/SFX update
-			if (gGameOpts.sound) gGameSounds.cardFlip.play();
+			if (gGameOpts.sound) playSound(gGameSounds.cardFlip);
 
 			// STEP 2: "Grab" card and place it into this foundation
 			{
@@ -183,7 +186,7 @@
 			// -------------------------------------------
 
 			// STEP 1: VFX/SFX update
-			if (gGameOpts.sound) gGameSounds.cardFlip.play();
+			if (gGameOpts.sound) playSound(gGameSounds.cardFlip);
 
 			// STEP 2: "Grab" card and place it into this slow
 			// A: Remove revert or the card flyback animation will run (yes, even with code below that deatches it!)
@@ -195,8 +198,8 @@
 			// D: Fix positioning CSS
 			ui.draggable.css('top', '0px');
 			ui.draggable.css('left', '0px');
-			// E: Reset z-index to mid-level (use 999 so we're above any 500 but always under card which drags at 1000)
-			ui.draggable.css('z-index',999);
+			// E: Reset z-index to mid-level (use 99 so we're above any 500 but always under card which drags at 100)
+			ui.draggable.css('z-index',99);
 
 			// STEP 3: Turn off this slot until it frees up again
 			if ( !gGameOpts.cheatUnlimOpen ) drop.droppable('disable');
@@ -207,7 +210,7 @@
 			ui.draggable.draggable({
 				helper: 'original',
 				start: function(event, ui){
-					$(this).css('z-index', 1000);
+					$(this).css('z-index', 100);
 					$(this).draggable('option', 'revert', true);
 					$('#'+strNeeded).droppable('enable');
 				},
@@ -230,7 +233,7 @@
 			}
 
 			// STEP 1: VFX/SFX update
-			if (gGameOpts.sound) gGameSounds.cardFlip.play();
+			if (gGameOpts.sound) playSound(gGameSounds.cardFlip);
 
 			// STEP 2: "Grab" card(s) and place them into this cascade
 			$.each(cards, function(i,obj){
@@ -334,6 +337,29 @@
 
 		// ==============================================================================================
 
+		function handleStartBtn() {
+
+			// STEP 1: iOS requires a touch before web audio can be played
+			loadSounds();
+			/*
+			// SEE: https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
+			// create empty buffer and play it
+			var myContext = new AudioContext();
+			var buffer = myContext.createBuffer(1, 1, 22050);
+			var source = myContext.createBufferSource();
+			source.buffer = buffer;
+			source.connect(myContext.destination);
+			source.start ? source.start(0) : source.noteOn(0);
+			*/
+
+			// STEP 2:
+			$('#dialogStart').dialog('close');
+
+			// STEP 3: Fill board
+			doRespConfig();
+			doFillBoard();
+		}
+
 		function handleMenuBtn() {
 			$('#dialogMenu').dialog('open');
 			$('#dialogMenu button').blur();
@@ -357,11 +383,49 @@
 
 		// ==============================================================================================
 
+		function loadSounds() {
+			// SEE: https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/decodeAudioData (most up-to-date source)
+			// SEE: http://www.html5rocks.com/en/tutorials/webaudio/intro/
+
+			// STEP 1: Load each sound
+			$.each(gGameSounds, function(key,sound){
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', sound.url, true);
+				xhr.responseType = 'arraybuffer';
+				xhr.onload = function(e){
+					if (this.status == 0 || this.status == 200)
+						gAudioCtx.decodeAudioData(xhr.response, function(buffer){ sound.buffer = buffer; }, onError);
+				};
+				xhr.send();
+			});
+
+			function onError(e){ console.error("Unable to load sound "+sound.url+": "+e); }
+		}
+
+		function playSound(objSound) {
+			// SRC: http://www.html5rocks.com/en/tutorials/webaudio/intro/
+
+			// STEP 1: Reality Check
+			if ( !objSound.buffer ) {
+				console.warn('WARN: No buffer exists for: '+objSound.url);
+				console.log(objSound.buffer);
+				return;
+			}
+
+			// STEP 2: Create new bufferSource with existing file buffer and play sound
+			var source = gAudioCtx.createBufferSource();
+			source.buffer = objSound.buffer;
+			source.connect(gAudioCtx.destination);
+			(source.start) ? source.start(0) : source.noteOn(0);
+		}
+
+		// ==============================================================================================
+
 		function cascHelper() {
 			// A: Build container and fill with cards selected
 			var container = $('<div/>').attr('id', 'draggingContainer').addClass('cardCont');
 			container.css( 'position', 'absolute' );
-			container.css( 'z-index', '1000' );
+			container.css( 'z-index', '100' );
 			container.css( 'top' , $(this).offset().top +'px' );
 			container.css( 'left', $(this).offset().left+'px' );
 			container.append( $(this).clone() );
@@ -385,7 +449,7 @@
 			var strHtml = '';
 
 			// STEP 1: VFX/SFX
-			if (gGameOpts.sound) gGameSounds.cardShuffle.play();
+			if (gGameOpts.sound) playSound(gGameSounds.cardShuffle);
 
 			// STEP 2: Build cards
 			$('.card').remove();
@@ -458,7 +522,7 @@
 			var intDelay = 500;
 
 			// STEP 1: VFX/SFX update
-			if (gGameOpts.sound) gGameSounds.crowdCheer.play();
+			if (gGameOpts.sound) playSound(gGameSounds.crowdCheer);
 
 			// STEP 2:
 			$('#dialogYouWon').dialog('open');
@@ -490,7 +554,10 @@
 		}
 
 		function appStart() {
-			// STEP 1: Setup 3 core droppable areas
+			// STEP 1: Start async load of sound files
+			loadSounds();
+
+			// STEP 2: Setup 3 core droppable areas
 			$('#cardFoun .slot').droppable({
 				accept:     '.card',
 				hoverClass: 'hvr-pulse-grow-hover',
@@ -500,19 +567,27 @@
 			$('#cardOpen .slot').droppable({
 				accept:     '.card',
 				hoverClass: 'hvr-pulse-grow-hover',
+				tolerance:  'pointer',
 				drop:       function(event,ui){ handleOpenDrop(event, ui, $(this)); }
 			});
 			$('#cardCasc > div').droppable({
 				accept:     '.card',
 				hoverClass: 'cascHover',
+				tolerance:  'pointer',
 				drop:       function(event,ui){ handleCascDrop(event, ui, $(this)); }
 			});
 
-			// STEP 2: Fill board
-			doRespConfig();
-			doFillBoard();
-
-			// STEP 3: Dialog setup
+			// STEP 3: jQuery Dialog setup
+			$('#dialogStart').dialog({
+				modal: true,
+				autoOpen: true,
+			    draggable: false,
+			    resizable: false,
+				dialogClass: 'dialogCool',
+				closeOnEscape: false,
+				width: ($(window).innerWidth() * 0.8),
+				height: ($(window).innerHeight() * 0.5),
+			});
 			$('#dialogYouWon').dialog({
 				modal: true,
 				autoOpen: false,
@@ -542,8 +617,20 @@
 				width: ($(window).innerWidth() * 0.3)
 			});
 
-			// STEP 4: Redraw on window resize (use a slight delay for PERF)
+			// STEP 4: Add handler for window resize (use a slight delay for PERF)
 			window.onresize = function(){ clearTimeout(gTimer); gTimer = setTimeout(doRespLayout, 100); };
+
+			// STEP 5: Web-Audio for iOS
+			// NOTE: iOS (iOS8+) mutes all sounds until a touch is detected (good on you Apple!), so we have to do this little thing here
+			$(window).on('touchstart', function(){
+				var buffer = gAudioCtx.createBuffer(1, 1, 22050); // create empty buffer
+				var source = gAudioCtx.createBufferSource();
+				source.buffer = buffer;
+				source.connect(gAudioCtx.destination); // connect to output (your speakers)
+				(source.start) ? source.start(0) : source.noteOn(0);
+				//
+				$(window).off('touchstart');
+			}, false);
 		}
 
 		// ==============================================================================================
@@ -551,6 +638,10 @@
 	</script>
 </head>
 <body>
+	<div id="dialogStart" style="display:none">
+		<button id="btnStart" onclick="handleStartBtn()">Start</button>
+	</div>
+
 	<div id="dialogMenu" style="display:none">
 		<div class="bigBtnBar">
 			<button onclick="$('#dialogMenu').dialog('close'); doFillBoard();">New Game</button>
