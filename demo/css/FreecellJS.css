@@ -93,7 +93,8 @@ button:focus { outline:0 !important; }
     width: 85%;
 	cursor: pointer;
     margin: 30px 0;
-    font-size: 1.75em;
+    font-family: 'Cinzel Decorative';
+    font-size: 2em;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
 	background-color:#77b55a; background:linear-gradient(to bottom, #77b55a 5%, #72b352 100%);
 	border-radius:10px; border:1px solid #4b8f29;
