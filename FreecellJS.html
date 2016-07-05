@@ -338,7 +338,6 @@
 		// ==============================================================================================
 
 		function handleStartBtn() {
-
 			// STEP 1: iOS requires a touch before web audio can be played
 			loadSounds();
 			/*
@@ -586,7 +585,7 @@
 				dialogClass: 'dialogCool',
 				closeOnEscape: false,
 				width: ($(window).innerWidth() * 0.8),
-				height: ($(window).innerHeight() * 0.5),
+				height: 350,
 			});
 			$('#dialogYouWon').dialog({
 				modal: true,
@@ -621,16 +620,18 @@
 			window.onresize = function(){ clearTimeout(gTimer); gTimer = setTimeout(doRespLayout, 100); };
 
 			// STEP 5: Web-Audio for iOS
-			// NOTE: iOS (iOS8+) mutes all sounds until a touch is detected (good on you Apple!), so we have to do this little thing here
-			$(window).on('touchstart', function(){
+			$(document).on('touchstart', '#btnStart', function(){
+				// A: Create and play a dummy sound to init sound in iOS
+				// NOTE: iOS (iOS8+) mutes all sounds until a touch is detected (good on you Apple!), so we have to do this little thing here
 				var buffer = gAudioCtx.createBuffer(1, 1, 22050); // create empty buffer
 				var source = gAudioCtx.createBufferSource();
 				source.buffer = buffer;
 				source.connect(gAudioCtx.destination); // connect to output (your speakers)
 				(source.start) ? source.start(0) : source.noteOn(0);
-				//
-				$(window).off('touchstart');
-			}, false);
+
+				// B: Start game
+				handleStartBtn();
+			});
 		}
 
 		// ==============================================================================================
@@ -639,7 +640,12 @@
 </head>
 <body>
 	<div id="dialogStart" style="display:none">
-		<button id="btnStart" onclick="handleStartBtn()">Start</button>
+		<div class="title">Freecell Solitaire</div>
+		<div class="hBtnTab">
+			<div><button onclick="showHowtoPlay()">Howto Play</button></div>
+			<div><button id="btnStart" onclick="handleStartBtn()">▶ PLAY</button></div>
+			<div><button onclick="handleOptionsOpen()">Options</button></div>
+		</div>
 	</div>
 
 	<div id="dialogMenu" style="display:none">
