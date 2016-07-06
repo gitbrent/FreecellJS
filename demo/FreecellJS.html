@@ -340,7 +340,7 @@
 		function handleStartBtn() {
 			// STEP 1: iOS requires a touch before web audio can be played
 			loadSounds();
-			/*
+
 			// SEE: https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
 			// create empty buffer and play it
 			var myContext = new AudioContext();
@@ -349,7 +349,7 @@
 			source.buffer = buffer;
 			source.connect(myContext.destination);
 			source.start ? source.start(0) : source.noteOn(0);
-			*/
+			
 
 			// STEP 2:
 			$('#dialogStart').dialog('close');
@@ -557,7 +557,7 @@
 
 		function appStart() {
 			// STEP 1: Start async load of sound files
-			loadSounds();
+//			loadSounds();
 
 			// STEP 2: Setup 3 core droppable areas
 			$('#cardFoun .slot').droppable({
