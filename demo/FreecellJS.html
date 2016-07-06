@@ -392,8 +392,11 @@
 				xhr.open('GET', sound.url, true);
 				xhr.responseType = 'arraybuffer';
 				xhr.onload = function(e){
-					if (this.status == 0 || this.status == 200)
+					if (this.status == 0 || this.status == 200) {
+						console.log(this.status);
+						console.log(e);
 						gAudioCtx.decodeAudioData(xhr.response, function(buffer){ sound.buffer = buffer; }, onError);
+					}
 				};
 				xhr.send();
 			});
