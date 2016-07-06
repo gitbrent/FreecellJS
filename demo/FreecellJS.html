@@ -339,8 +339,7 @@
 
 		function handleStartBtn() {
 			// STEP 1: iOS requires a touch before web audio can be played
-//			loadSounds();
-
+/*
 			// SEE: https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
 			// create empty buffer and play it
 			var buffer = gAudioCtx.createBuffer(1, 1, 22050);
@@ -348,8 +347,9 @@
 			source.buffer = buffer;
 			source.connect(gAudioCtx.destination);
 			source.start ? source.start(0) : source.noteOn(0);
-
+*/
 			// TODO: DEBUG:
+			// WORKS!!!!
 			playSound(gGameSounds.crowdCheer);
 
 			// STEP 2:
