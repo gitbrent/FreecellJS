@@ -78,7 +78,7 @@ button:focus { outline:0 !important; }
     letter-spacing: 0.1em;
     color: white;
     border: 0;
-    text-transform: uppercase;;
+    text-transform: uppercase;
     border-radius: 10px;
     box-shadow: 5px 5px 15px rgba(0,0,0,0.5);
 }
