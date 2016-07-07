@@ -108,11 +108,12 @@
 			gGameOpts.sound          = true;
 
 			// SETUP: Define / Start async load of sounds files
+			// NOTE: iOS (as of iOS9) is unable to play ogg files, so we are using MP3 for everything
 			var gGameSounds = {};
-			gGameSounds.cardFlip    = { buffer:null, url:"sounds/cardFlip.ogg" };
-			gGameSounds.cardShuffle = { buffer:null, url:"sounds/shuffle.ogg" };
-			gGameSounds.crowdCheer  = { buffer:null, url:"sounds/crowd-cheer.mp3" };
-			gGameSounds.sadTrombone = { buffer:null, url:"sounds/sadTrombone.ogg" };
+			gGameSounds.cardFlip    = { buffer:null, url:'sounds/cardFlip.mp3',    src:'freesound.org/people/f4ngy/sounds/240776/'    };
+			gGameSounds.cardShuffle = { buffer:null, url:'sounds/cardShuffle.mp3', src:'freesound.org/people/deathpie/sounds/19245/'  };
+			gGameSounds.crowdCheer  = { buffer:null, url:'sounds/crowdCheer.mp3',  src:'soundbible.com/1700-5-Sec-Crowd-Cheer.html'   };
+			gGameSounds.sadTrombone = { buffer:null, url:'sounds/sadTrombone.mp3', src:'freesound.org/people/Benboncan/sounds/73581/' };
 		}
 
 		// ==============================================================================================
@@ -263,8 +264,6 @@
 			// TODO: measure #playArea and length of children
 		}
 
-		// ==============================================================================================
-
 		function handleCardDblClick(card) {
 			// RULE 1: Only topmost card can be double-clicked
 			if ( $($(card).parent().find('.card:last-child')[0]).prop('id') != $(card).prop('id') ) return;
@@ -338,22 +337,13 @@
 		// ==============================================================================================
 
 		function handleStartBtn() {
-			// STEP 1: iOS requires a touch before web audio can be played
-/*
-			// SEE: https://paulbakaus.com/tutorials/html5/web-audio-on-ios/
-			// create empty buffer and play it
-			var buffer = gAudioCtx.createBuffer(1, 1, 22050);
-			var source = gAudioCtx.createBufferSource();
-			source.buffer = buffer;
-			source.connect(gAudioCtx.destination);
-			source.start ? source.start(0) : source.noteOn(0);
-*/
-			// TODO: DEBUG:
-			// WORKS!!!!
-			playSound(gGameSounds.crowdCheer);
-
-			// STEP 2:
+			// STEP 1:
 			$('#dialogStart').dialog('close');
+
+			// STEP 2: iOS requires a touch event before any type of audio can be played, then everything will work as normal
+			// SOLN: A: play a dummy sound (https://paulbakaus.com/tutorials/html5/web-audio-on-ios/)
+			// ....: B: play a real startup sound when applicable (this is our case)
+			if (gGameOpts.sound) playSound(gGameSounds.cardShuffle);
 
 			// STEP 3: Fill board
 			doRespConfig();
@@ -363,6 +353,17 @@
 		function handleMenuBtn() {
 			$('#dialogMenu').dialog('open');
 			$('#dialogMenu button').blur();
+		}
+
+		function handleOptionsNewGame() {
+			// STEP 1: UX/UI Update
+			if (gGameOpts.sound) playSound(gGameSounds.sadTrombone);
+
+			// STEP 2: Close dialog
+			$('#dialogMenu').dialog('close');
+
+			// STEP 3: Clear/Fill board
+			doFillBoard();
 		}
 
 		function handleOptionsOpen() {
@@ -379,30 +380,6 @@
 
 			// LAST: Close dialog
 			$('#dialogOptions').dialog('close');
-		}
-
-		// ==============================================================================================
-
-		function loadSounds() {
-			// SEE: https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/decodeAudioData (most up-to-date source)
-			// SEE: http://www.html5rocks.com/en/tutorials/webaudio/intro/
-
-			// STEP 1: Load each sound
-			$.each(gGameSounds, function(key,sound){
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', sound.url, true);
-				xhr.responseType = 'arraybuffer';
-				xhr.onload = function(e){
-					if (this.status == 0 || this.status == 200) {
-						console.log(this.status);
-						console.log(e);
-						gAudioCtx.decodeAudioData(xhr.response, function(buffer){ sound.buffer = buffer; }, onError);
-					}
-				};
-				xhr.send();
-			});
-
-			function onError(e){ console.error("Unable to load sound. "+e); }
 		}
 
 		function playSound(objSound) {
@@ -539,6 +516,25 @@
 			}
 		}
 
+		function loadSounds() {
+			// SEE: https://developer.mozilla.org/en-US/docs/Web/API/AudioContext/decodeAudioData (most up-to-date source)
+			// SEE: http://www.html5rocks.com/en/tutorials/webaudio/intro/
+
+			// STEP 1: Load each sound
+			$.each(gGameSounds, function(key,sound){
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', sound.url, true);
+				xhr.responseType = 'arraybuffer';
+				xhr.onload = function(e){
+					if (this.status == 0 || this.status == 200)
+						gAudioCtx.decodeAudioData(xhr.response, function(buffer){ sound.buffer = buffer; }, onError);
+				};
+				xhr.send();
+			});
+
+			function onError(e){ console.error("Unable to load sound. "+e); }
+		}
+
 		function doRespConfig() {
 			// STEP 1: Responsive Setup
 			if      ( $(window).innerWidth() < 800 ) CARD_OFFSET = 30;
@@ -646,15 +642,15 @@
 	<div id="dialogStart" style="display:none">
 		<div class="title">Freecell Solitaire</div>
 		<div class="hBtnTab">
-			<div><button onclick="showHowtoPlay()">Howto Play</button></div>
-			<div><button id="btnStart" onclick="handleStartBtn()">▶ PLAY</button></div>
+			<div><button onclick="showHowtoPlay()">How To Play</button></div>
+			<div><button id="btnStart" onclick="handleStartBtn()">PLAY</button></div>
 			<div><button onclick="handleOptionsOpen()">Options</button></div>
 		</div>
 	</div>
 
 	<div id="dialogMenu" style="display:none">
 		<div class="bigBtnBar">
-			<button onclick="$('#dialogMenu').dialog('close'); doFillBoard();">New Game</button>
+			<button onclick="handleOptionsNewGame()">New Game</button>
 			<button onclick="handleOptionsOpen()">Options</button>
 			<button onclick="$('#dialogMenu').dialog('close');">Resume</button>
 		</div>
