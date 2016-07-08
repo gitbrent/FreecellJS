@@ -63,13 +63,6 @@ button {
 .ui-dialog-titlebar { display: none; }
 .ui-widget-overlay { background: rgba(0,0,0,0.9); }
 
-#dialogStart { text-align: center; }
-#dialogStart .title {
-    font-family: Playfair; font-size: 6em; color: white;
-    letter-spacing: .03em;
-    text-shadow: 5px 5px 10px rgba(0,0,0,0.7);
-}
-
 .hBtnTab { display: table; width: 100%; position: absolute; left: 0; bottom: 30px; }
 .hBtnTab > div { display: table-cell; padding:0 30px; text-align:left; vertical-align: bottom; }
 .hBtnTab > div:nth-child(1) { width:25%; }
@@ -92,6 +85,13 @@ button {
     letter-spacing: 0.1em;
 }
 .hBtnTab > div:nth-child(3) button { background:linear-gradient(to bottom, #921AD3 0%,#8415C4 100%); }
+
+#dialogStart { text-align: center; }
+#dialogStart .title {
+    font-family: Playfair; font-size: 6em; color: white;
+    letter-spacing: .03em; white-space: nowrap;
+    text-shadow: 5px 5px 10px rgba(0,0,0,0.7);
+}
 
 #dialogOptions label {
     font-size: 1.5em;
@@ -233,7 +233,8 @@ button {
     margin: 0;
     border-radius: 0.8em;
     background: rgba(0, 50, 0, 0.75);
-    box-shadow: inset 0px 0px 3px 0px #ddffdd;
+    box-shadow: inset 0px 0px 20px 0px rgba(0,0,0, 0.5);
+    border: 1px solid black;
     font-size: 7.5px;
 }
 .slotHover { border: 1px solid #a7a7a7; opacity: 1; transform: scale(1.1); transition: .25s ease-in; }
@@ -282,6 +283,10 @@ h1, .card, div#gameTitle {
 
 /* Responsive Rules: 1080=tablets (iPad landscape=1024) */
 @media only screen and (max-width: 1080px) {
+    #dialogStart .title { font-size: 5em; }
+    .hBtnTab > div:nth-child(2) button { font-size: 2em; }
+    .hBtnTab button { font-size: 1em; }
+
     #playArea { padding: 20px; }
     #topArea > #cardFoun .slot h1 { line-height:126px; }
     .card, .slot { width:90px; height:126px; font-size:8px; }
