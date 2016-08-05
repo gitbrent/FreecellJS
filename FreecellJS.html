@@ -99,6 +99,13 @@
 
 		// GAME SETUP
 		{
+			// SETUP: Table backgrounds
+			var gGameTableBkgds = {};
+			gGameTableBkgds.pattern = { url:'img/table_pattern.jpg' };
+			gGameTableBkgds.circles = { url:'img/table_circles.jpg' };
+			gGameTableBkgds.felt    = { url:'img/table_felt.jpg'    };
+			gGameTableBkgds.plain   = { url:'img/table_plain.png'   };
+
 			// SETUP: Game Options / Defaults
 			var gGameOpts = {};
 			gGameOpts.allowFounReuse = false;
@@ -106,6 +113,7 @@
 			gGameOpts.debugOneLeft   = false;
 			gGameOpts.showTips       = true;
 			gGameOpts.sound          = true;
+			gGameOpts.tableBkgdUrl   = gGameTableBkgds.pattern.url;
 
 			// SETUP: Define / Start async load of sounds files
 			// NOTE: iOS (as of iOS9) is unable to play ogg files, so we are using MP3 for everything
@@ -378,6 +386,10 @@
 			// STEP 1: Update game options
 			gGameOpts.sound = $('#chkOptSound').prop('checked');
 
+			// STEP 2: Set background
+			var strBkgdUrl = $('input[type="radio"][name="radBkgd"]:checked').data('url');
+			if ( strBkgdUrl ) $('body').css('background', 'url("'+ strBkgdUrl +'")');
+
 			// LAST: Close dialog
 			$('#dialogOptions').dialog('close');
 		}
@@ -584,8 +596,8 @@
 			    resizable: false,
 				dialogClass: 'dialogCool',
 				closeOnEscape: false,
-				width: ($(window).innerWidth() * 0.8),
-				height: 350,
+				height: ( $(window).innerWidth() < 1080 ? 300 : 330 ),
+				width:  ( $(window).innerWidth() * ( $(window).innerWidth() < 1080 ? 0.9 : 0.8 ) )
 			});
 			$('#dialogYouWon').dialog({
 				modal: true,
@@ -604,7 +616,7 @@
 			    resizable: false,
 				dialogClass: 'dialogCool',
 				closeOnEscape: true,
-				width: ($(window).innerWidth() * 0.4)
+				width: ( $(window).innerWidth() * ( $(window).innerWidth() < 1080 ? 0.5 : 0.4 ) )
 			});
 			$('#dialogOptions').dialog({
 				modal: true,
@@ -613,7 +625,7 @@
 			    resizable: false,
 				dialogClass: 'dialogCool',
 				closeOnEscape: true,
-				width: ($(window).innerWidth() * 0.3)
+				width: ( $(window).innerWidth() * ( $(window).innerWidth() < 1080 ? 0.5 : 0.3 ) )
 			});
 
 			// STEP 4: Add handler for window resize (use a slight delay for PERF)
@@ -632,6 +644,17 @@
 				// B: Start game
 				handleStartBtn();
 			});
+
+			// STEP 6: OPTIONS: Show available backgrounds
+			$.each(gGameTableBkgds, function(i,obj){
+				var strHtml = '<div>'
+							+ '  <div><input id="radBkgd'+i+'" name="radBkgd" type="radio" data-url="'+ obj.url +'" '
+							+ (gGameOpts.tableBkgdUrl == obj.url ? ' checked="checked"' : '') + '></div>'
+							+ '  <div><label for="radBkgd'+i+'"><div style="background:url(\''+ obj.url +'\'); width:100%; height:60px;"></div></div>'
+							+ '</div>';
+
+				$('#optBkgds').append( strHtml );
+			});
 		}
 
 		// ==============================================================================================
@@ -642,7 +665,7 @@
 	<div id="dialogStart" style="display:none">
 		<div class="title">Freecell Solitaire</div>
 		<div class="hBtnTab">
-			<div><button onclick="showHowtoPlay()">How To Play</button></div>
+			<div><button onclick="window.open('http://cardgameheaven.com/single-player-games/freecell-solitaire.html','_blank')">How To Play</button></div>
 			<div><button id="btnStart" onclick="handleStartBtn()">PLAY</button></div>
 			<div><button onclick="handleOptionsOpen()">Options</button></div>
 		</div>
@@ -657,9 +680,18 @@
 	</div>
 
 	<div id="dialogOptions" style="display:none">
-		<div class="bigBtnBar">
-			<div><label for="chkOptSound"><input id="chkOptSound" type="checkbox" checked="checked"> Sound</label></div>
-			<button onclick="handleOptionsClose()">Close</button>
+		<div class="label">Sound</div>
+		<fieldset>
+			<label for="chkOptSound"><input id="chkOptSound" type="checkbox" checked="checked"> Play Sounds</label>
+		</fieldset>
+
+		<div class="label">Table Background</div>
+		<fieldset>
+			<div id="optBkgds" class="tableRows"></div>
+		</fieldset>
+
+		<div style="margin:20px 0 0 0;">
+			<button class="coolBtn small" onclick="handleOptionsClose()">Close</button>
 		</div>
 	</div>
 
