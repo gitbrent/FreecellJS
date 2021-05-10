@@ -255,7 +255,7 @@ button.coolBtn.small {
 #topArea > div#gameTitle div.blk { color:black;   }
 #topArea > div#gameTitle div.red { color:#df0000; }
 
-#cardFoun > div > div { text-align: left; }
+#cardFoun > div > div { text-align: right; }
 #cardFoun > div > div:last-child { margin-right: 0; }
 #cardFoun .slot h1 {
     margin: 0;
@@ -264,10 +264,10 @@ button.coolBtn.small {
     line-height:168px; vertical-align:middle;
 }
 #cardFounCont { display:table; width:100%; }
-#cardFounCont > div { display:table-cell; width:25%; text-align:left; }
+#cardFounCont > div { display:table-cell; width:25%; text-align:right; }
 
 #cardOpenCont { display:table; width:100%; }
-#cardOpenCont > div { display:table-cell; width:25%; text-align:right; }
+#cardOpenCont > div { display:table-cell; width:25%; text-align:left; }
 
 #btnMenu {
     position: absolute;
@@ -276,12 +276,61 @@ button.coolBtn.small {
     cursor:pointer;
     width: 95%; width: calc(100% - 20px);
     margin-top: 10px; padding: 4px 24px;
-	background: linear-gradient(to bottom, #77d42a 5%, #5cb811 100%); background-color:#77d42a;
+    background: linear-gradient(to bottom, #77d42a 5%, #5cb811 100%); background-color:#77d42a;
     border:1px solid #268a16; border-radius:6px;
     box-shadow: inset 0px 1px 0px 0px #caefab;
     font-size: 0.5em; color: #306108; text-decoration: none; text-shadow:0px 2px 0px #aade7c;
 }
 #btnMenu:hover { background:linear-gradient(to bottom, #5cb811 5%, #77d42a 100%); background-color:#5cb811; }
+
+#topBar {
+  display: none;
+  /* display: flex; */
+  background-color: #030;
+  position: relative;
+  padding: 5px 10px;
+  font-family: Suit;
+  font-size: 1.5em;
+  font-weight: 100;
+  text-shadow: 2px 2px 3px #333;
+  color: #88dd88;
+  vertical-align: top;
+}
+
+#topBar title {
+  position: relative;
+  padding: 5px 10px;
+  font-family: Roboto;
+  font-size: 2.2em; 
+  font-weight: 100;
+  text-shadow: 2px 2px 3px #333;
+  color: #88dd88;
+  vertical-align: top;
+  margin: 2px 0 0 0;
+}
+
+#topBar button {
+  position: static;
+  margin: 0px 10px 0px 0px
+  width: auto;
+  display:inline-block;
+  cursor:pointer;
+  background: linear-gradient(to bottom, #77d42a 5%, #5cb811 100%); background-color:#77d42a;
+  border:1px solid #268a16; border-radius:6px;
+  box-shadow: inset 0px 1px 0px 0px #caefab;
+  font-size: 0.5em; color: #306108; text-decoration: none; text-shadow:0px 2px 0px #aade7c;
+}
+
+#topBar > div > div {
+  margin: 0px 10px 0px 10px;
+  display: inline-block; width: 50%;
+  font-size: 1em; line-height: 1em;
+  vertical-align: middle;
+  text-shadow: 0px 0px 10px #aade7c;
+}
+
+#topBar div.blk { color:black;   }
+#topBar div.red { color:#df0000; }
 
 /* ---------- Card Casc ---------- */
 #cardCasc { display:table; width: 100%; }
@@ -377,7 +426,7 @@ h1, .card, div#gameTitle {
 @media only screen and (max-width: 1020px) {
 
     #topArea > div#gameTitle { display: none; }
-    /* ^^^ TODO ^^^ */
+    #topBar { display: flex; }
 
     #topArea > #cardFoun .slot h1 { line-height:126px; }
     .card, .slot { width:90px; height:126px; font-size:8px; }
