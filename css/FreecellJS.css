@@ -285,7 +285,7 @@ button.coolBtn.small {
 
 /* ---------- Card Casc ---------- */
 #cardCasc { display:table; width: 100%; }
-#cardCasc > div { display:table-cell; width:14%; text-align:left; vertical-align:top; }
+#cardCasc > div { display:table-cell; width:12.5%; text-align:left; vertical-align:top; }
 #cardCasc > div:last-child { width:10%; text-align:right; }
 
 /* ---------- Card/Slot ---------- */
