@@ -4,7 +4,7 @@ Freecell solitaire card game for web browsers
 
 **************************************************************************************************
 # Try Freecell-JS
-[Play FreecellJS Solitaire Online!](https://gitbrent.github.io/FreecellJS/demo/FreecellJS.html)  
+[Play FreecellJS Solitaire Online!](https://croquelois.github.io/FreecellJS/FreecellJS)  
 
 ![FreecellJS Solitaire Card Game Screencap](https://gitbrent.github.io/FreecellJS/img/freecell-js-game.png)
 
@@ -47,7 +47,7 @@ Could be used as a base for other types of card games. :)
 ### Summer 2016 Goals:  
 * Add offline support (almost done)
 * Finish core parts: Add "How to play" and inline Tips
-* Work towards 100% [accessability](https://en.wikipedia.org/wiki/Web_accessibility)
+* Work towards 100% [accessibility](https://en.wikipedia.org/wiki/Web_accessibility)
 
 ### Future Features:
 * Various backgrounds
