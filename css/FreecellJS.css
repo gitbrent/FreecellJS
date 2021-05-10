@@ -213,7 +213,13 @@ button.coolBtn.small {
 
 /* --------------------------------------------------------------------------------------------- */
 
-#playArea { padding:30px 60px; }
+#playArea {
+	padding:30px 60px; 
+   	max-width: 1500px;
+    	left: 50%;
+    	position: relative;
+    	transform: translate(-50%, 0%);
+}
 #playArea > div { width: 100%; }
 
 /* ---------- Top Area ---------- */
