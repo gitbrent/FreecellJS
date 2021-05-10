@@ -78,10 +78,7 @@ var gTimer;
 
 // ==============================================================================================
 
-function handleFounDrop(event, ui, drop) {
-  // DOCS: "$(this) [drop] represents the droppable the draggable is dropped on. ui.draggable represents the draggable"
-  // NOTE: jQuery UI draggables will revert no matter what (even if we func accept:ARG and return true/fasle), so revert:false is reqd!
-
+function checkFounDrop(ui, drop){
   // RULE 1: Was only a single card provided?
   if ( ui.helper.children().length != 1 ) {
     if ( gGameOpts.showTips ) null; // TODO
@@ -105,8 +102,17 @@ function handleFounDrop(event, ui, drop) {
       return false;
     }
   }
+  return true;
+}
 
-  // ------------------------------------------------------------------------
+function handleFounDrop(event, ui, drop) {
+  // DOCS: "$(this) [drop] represents the droppable the draggable is dropped on. ui.draggable represents the draggable"
+  // NOTE: jQuery UI draggables will revert no matter what (even if we func accept:ARG and return true/false), so revert:false is reqd!
+  if(!checkFounDrop(ui, drop))
+    return false;
+  
+  // STEP 0: Warn that the card is moving out
+  ui.draggable.trigger("moveOut");
 
   // STEP 1: VFX/SFX update
   if (gGameOpts.sound) playSound(gGameSounds.cardFlip);
@@ -135,17 +141,25 @@ function handleFounDrop(event, ui, drop) {
   if ( $('#cardFoun .card').length == 52 ) doGameWon();
 }
 
-function handleOpenDrop(event, ui, drop) {
-  // -------------------------------------------
-
+function checkOpenDrop(ui, drop){
   // RULE 1: Was only a single card provided?
   if ( ui.helper.children().length != 1 ) {
     if ( gGameOpts.showTips ) null; // TODO
     return false;
   }
+  if ( drop.children().length != 0){
+    if ( gGameOpts.showTips ) null; // TODO
+    return false;
+  }
+  return true;
+}
 
-  // -------------------------------------------
-
+function handleOpenDrop(event, ui, drop) {
+  if(!checkOpenDrop(ui, drop))
+    return false;
+  // STEP 0: Warn that the card is moving out
+  ui.draggable.trigger("moveOut");
+  
   // STEP 1: VFX/SFX update
   if (gGameOpts.sound) playSound(gGameSounds.cardFlip);
 
@@ -167,14 +181,10 @@ function handleOpenDrop(event, ui, drop) {
   else $.each(drop.children('.card'), function(i,card){ $(card).css('position','relative').css('top',i*-1*($(card).height()-20)+'px').css('left','0px');});
 
   // STEP 4: Reset draggable params (esp. helper as prev one from cascades does things we no longer want to do)
-  var strNeeded = $(drop).attr('id');
-  ui.draggable.draggable({
-    helper: 'original',
-    start: function(event, ui){
-      $(this).css('z-index', 100);
-      $(this).draggable('option', 'revert', true);
-      $('#'+strNeeded).droppable('enable');
-    },
+  ui.draggable.one("moveOut", () => {
+    ui.draggable.css('z-index', 100);
+    ui.draggable.draggable('option', 'revert', true);
+    $(drop).droppable('enable');
   });
 }
 
@@ -192,6 +202,9 @@ function handleCascDrop(event, ui, drop) {
     if ( gGameOpts.showTips ) null; // TODO
     return false;
   }
+  
+  // STEP 0: Warn that the card is moving out
+  ui.draggable.trigger("moveOut");
 
   // STEP 1: VFX/SFX update
   if (gGameOpts.sound) playSound(gGameSounds.cardFlip);
@@ -228,29 +241,32 @@ function handleCardDblClick(card) {
   // RULE 1: Only topmost card can be double-clicked
   if ( $($(card).parent().find('.card:last-child')[0]).prop('id') != $(card).prop('id') ) return;
 
-  // STEP 1: Where are we?
-  switch ( $(card).parent().parent().prop('id') ) {
-    case 'cardCasc':
+  let event = {};
+  let ui = { draggable:$(card), helper:{ children:function(){ return [$(card)]; } } };
+  let drop = null;
+  
+  // are we in the cascades ?
+  if($(card).parents("#cardCasc").length > 0){
       // CHECK 1: Can card go to foundation?
-      // TODO:
-
+      drop = ['#cardFoun1','#cardFoun2','#cardFoun3','#cardFoun4'].map(id => $(id)).filter(drop => checkFounDrop(ui,drop))[0];
+      if(drop)
+        return handleFounDrop(event, ui, drop);
+      
       // CHECK 2: Do we have an open slot to send this card to?
-      var event = {};
-      var ui = { draggable:$(card), helper:{ children:function(){ return [$(card)]; } } };
-      var drop = null;
-      if      ( $('#cardOpen1').children().length == 0 ) drop = $('#cardOpen1');
-      else if ( $('#cardOpen2').children().length == 0 ) drop = $('#cardOpen2');
-      else if ( $('#cardOpen3').children().length == 0 ) drop = $('#cardOpen3');
-      else if ( $('#cardOpen4').children().length == 0 ) drop = $('#cardOpen4');
-      else return false;
-      handleOpenDrop(event, ui, drop);
-      break;
-    default:
-      break;
+      drop = ['#cardOpen1','#cardOpen2','#cardOpen3','#cardOpen4'].map(id => $(id)).filter(drop => checkOpenDrop(ui, drop))[0];
+      if(drop)
+        return handleOpenDrop(event, ui, drop);
   }
-
-  // TODO: more!!!
-
+  
+  // are we in the open slot ?
+  if($(card).parents("#cardOpen").length > 0){
+    // CHECK 1: Can card go to foundation?
+    drop = ['#cardFoun1','#cardFoun2','#cardFoun3','#cardFoun4'].map(id => $(id)).filter(drop => checkFounDrop(ui,drop))[0];
+    if(drop){
+      $(card).trigger("dragstart");
+      return handleFounDrop(event, ui, drop);
+    }
+  }
 }
 
 /**
