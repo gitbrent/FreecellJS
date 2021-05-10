@@ -36,6 +36,7 @@
 
 	<script type="text/javascript" src="js/utils.js"></script>
 	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript" src="js/stats.js"></script>
 </head>
 <body>
 	<div id="dialogStart" style="display:none">
@@ -44,6 +45,7 @@
 			<div><button onclick="window.open('http://cardgameheaven.com/single-player-games/freecell-solitaire.html','_blank')">How To Play</button></div>
 			<div><button id="btnStart" onclick="handleStartBtn()">PLAY</button></div>
 			<div><button onclick="handleOptionsOpen()">Options</button></div>
+      <div><button onclick="handleStatsOpen()">Stats</button></div>
 		</div>
 	</div>
 
@@ -51,6 +53,7 @@
 		<div class="bigBtnBar">
 			<button onclick="handleOptionsNewGame()">New Game</button>
 			<button onclick="handleOptionsOpen()">Options</button>
+      <button onclick="handleStatsOpen()">Stats</button>
 			<button onclick="$('#dialogMenu').dialog('close');">Resume</button>
 		</div>
 	</div>
@@ -71,6 +74,40 @@
 		</div>
 	</div>
 
+	<div id="dialogStats" style="display:none">
+		<div class="label">Statistics</div>
+		<fieldset>
+			<div id="stats" class="tableRows">
+        <div>
+          <div id="stats-nbWin"></div>
+          <div><div class="label">Game won</div></div>
+        </div>
+        <div>
+          <div id="stats-nbLose"></div>
+          <div><div class="label">Game lost</div></div>
+        </div>
+        <div>
+          <div id="stats-maxConsWin"></div>
+          <div><div class="label">Consecutive win</div></div>
+        </div>
+        <div>
+          <div id="stats-curConsWin"></div>
+          <div><div class="label">Max consecutive win</div></div>
+        </div>
+        <div>
+          <div id="stats-avgWinTime"></div>
+          <div><div class="label">Average time to win</div></div>
+        </div>
+      </div>
+		</fieldset>
+    <div style="margin:20px 0 0 0;">
+			<button id="resetBtn" class="coolBtn small">Reset</button>
+		</div>
+		<div style="margin:20px 0 0 0;">
+			<button class="coolBtn small" onclick="$('#dialogStats').dialog('close');">Close</button>
+		</div>
+	</div>
+  
 	<div id="dialogYouWon" style="display:none">
 		<div class="bigText">WINNER!!!</div>
 		<div class="bigBtnBar"><button onclick="$('#dialogYouWon').dialog('close'); doFillBoard();">Play Again</button></div>

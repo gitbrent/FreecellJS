@@ -461,6 +461,9 @@ function doFillBoard() {
 
   // STEP 5: Adjust card fanning offset
   doRespLayout();
+  
+  // STEP 6: Inform the statistics module
+  Stats.startGame();
 }
 
 function doGameWon() {
@@ -480,6 +483,9 @@ function doGameWon() {
       $(card).animate( {left:( Math.floor(Math.random()*12) * 100 )+'px', top:($(window).innerHeight()*1.1)+'px'}, (intDelay += 100), function(){$(this).remove();} );
     });
   }
+  
+  // STEP 4: Update stats
+  Stats.gameWon();
 }
 
 function loadSounds() {
@@ -546,8 +552,8 @@ function appStart() {
   $('#dialogStart').dialog({
     modal: true,
     autoOpen: true,
-      draggable: false,
-      resizable: false,
+    draggable: false,
+    resizable: false,
     dialogClass: 'dialogCool',
     closeOnEscape: false,
     height: ( $(window).innerWidth() < 1080 ? 300 : 330 ),
@@ -556,8 +562,8 @@ function appStart() {
   $('#dialogYouWon').dialog({
     modal: true,
     autoOpen: false,
-      draggable: false,
-      resizable: false,
+    draggable: false,
+    resizable: false,
     dialogClass: 'dialogCool',
     closeOnEscape: false,
     width: ($(window).innerWidth() * 0.6),
@@ -566,8 +572,8 @@ function appStart() {
   $('#dialogMenu').dialog({
     modal: true,
     autoOpen: false,
-      draggable: false,
-      resizable: false,
+    draggable: false,
+    resizable: false,
     dialogClass: 'dialogCool',
     closeOnEscape: true,
     width: ( $(window).innerWidth() * ( $(window).innerWidth() < 1080 ? 0.5 : 0.4 ) )
@@ -575,13 +581,13 @@ function appStart() {
   $('#dialogOptions').dialog({
     modal: true,
     autoOpen: false,
-      draggable: false,
-      resizable: false,
+    draggable: false,
+    resizable: false,
     dialogClass: 'dialogCool',
     closeOnEscape: true,
     width: ( $(window).innerWidth() * ( $(window).innerWidth() < 1080 ? 0.5 : 0.3 ) )
   });
-
+  
   // STEP 4: Add handler for window resize (use a slight delay for PERF)
   window.onresize = function(){ clearTimeout(gTimer); gTimer = setTimeout(doRespLayout, 100); };
 
@@ -615,6 +621,9 @@ function appStart() {
 
     $('#optBkgds').append( strHtml );
   });
+  
+  // STEP 7: Init statistics module
+  Stats.init();
 }
 
 // ==============================================================================================
