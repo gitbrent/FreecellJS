@@ -150,7 +150,7 @@ function handleOpenDrop(event, ui, drop) {
   if (gGameOpts.sound) playSound(gGameSounds.cardFlip);
 
   // STEP 2: "Grab" card and place it into this slow
-  // A: Remove revert or the card flyback animation will run (yes, even with code below that deatches it!)
+  // A: Remove revert or the card flyback animation will run (yes, even with code below that detaches it!)
   ui.draggable.draggable('option', 'revert', false);
   // B: "Grab"/Detach/Append CARD
   ui.draggable.detach().appendTo(drop).removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
@@ -421,7 +421,7 @@ function doFillBoard() {
   });
 
   // STEP 3: Shuffle / Deal cards into tableau, fanned style
-  var intCol = 1, intTop = 0;
+  var intCol = 1;
   if ( gGameOpts.debugOneLeft ) {
     $.each(arrCards, function(i,card){
       if      (i < 13) $('#cardFoun1').append( card.css('position','absolute').animate({ left:0, top:0 }, (i*1000/52)) );
@@ -442,8 +442,7 @@ function doFillBoard() {
       $('#cardCasc'+intCol).append( card.animate({ left:0, top:-($('#cardCasc'+intCol+' .card').length * ($('.card:first-child').height()-CARD_OFFSET)) + 'px' }, (i*1000/52) ) );
 
       // Fill cascade cols in round-robin order
-      if (intCol>=8) { intCol = 0; intTop = 0; }
-      intCol++
+      intCol = intCol%8 + 1;
     });
   }
 
@@ -520,7 +519,9 @@ function doRespLayout() {
 
   // STEP 2: Re-fan cards to handle varying offsets as resizes occur
   $('#cardCasc > div').each(function(i,col){
-    $(col).find('.card').each(function(idx,card){ $(card).css('top','-'+(idx*($('.card:first-child').height()-CARD_OFFSET))+'px'); });
+    $(col).find('.card').each(function(idx,card){ 
+      $(card).css('top','-'+(idx*($('.card:first-child').height()-CARD_OFFSET))+'px'); 
+    });
   });
 }
 
@@ -605,7 +606,7 @@ function appStart() {
     handleStartBtn();
   });
 
-  // STEP 6: OPTIONS: Show available backgrounds
+  // STEP 6: Initialise options popup
   if(localStorage.tableBkgdUrl)
     gGameOpts.tableBkgdUrl = localStorage.tableBkgdUrl;
   $('body').css('background', 'url("'+ gGameOpts.tableBkgdUrl +'")');
@@ -622,7 +623,7 @@ function appStart() {
     $('#optBkgds').append( strHtml );
   });
   
-  // STEP 7: Init statistics module
+  // STEP 7: Initialise statistics popup
   Stats.init();
 }
 
