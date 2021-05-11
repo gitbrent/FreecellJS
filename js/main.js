@@ -78,6 +78,19 @@ var gTimer;
 
 // ==============================================================================================
 
+function setupDraggable(card){
+  card
+  .draggable({
+    helper: cascHelper,
+    revert: true,
+    start : handleDragStart,
+    stop  : handleDragStop
+  })
+  .dblclick(function(){
+    handleCardDblClick($(this));
+  });
+}
+
 function checkFounDrop(ui, drop){
   // RULE 1: Was only a single card provided?
   if ( ui.helper.children().length != 1 ) {
@@ -189,13 +202,14 @@ function handleOpenDrop(event, ui, drop) {
 }
 
 function handleCascDrop(event, ui, drop) {
+  drop = $(drop);
   // DESIGN: We check for valid sets upon dragStart, so assume set sequence is valid upon drop
-  var cardTopCasc = $(drop).children().last();
+  var cardTopCasc = drop.children().last();
   var card = ( ui.helper.prop('id') == 'draggingContainer' ) ? ui.helper.children()[0] : ui.draggable;
   var cards = ( ui.helper.prop('id') == 'draggingContainer' ) ? ui.helper.children() : [ui.draggable];
 
   // RULE 1: Is the single-card/container-top-card in run order?
-  if ( $(drop).children().length > 0
+  if ( drop.children().length > 0
     && ( $.inArray($(cardTopCasc).data('suit'), SUIT_DICT[$(card).data('suit')].accepts) == -1
       || NUMB_DICT[$(cardTopCasc).data('numb')].cascDrop != $(card).data('numb') )
   ) {
@@ -211,26 +225,14 @@ function handleCascDrop(event, ui, drop) {
 
   // STEP 2: "Grab" card(s) and place them into this cascade
   $.each(cards, function(i,obj){
-    // NOTE: ui.helper.children()[0] != ui.draggable (!!!) - you can call .draggable() on the ui ene but not on the array element!!
-    // ....: Correct way is to call object directly using its id - reference does not work
     var card = $('#'+$(obj).prop('id'));
-
-    // A: Remove revert or the card flyback animation will run (yes, even with code below that deatches it!)
+    var intTop = ( drop.children().length > 0 ) ? Number(drop.children().last().css('top').replace('px','')) - ($('.card:first-child').height() - CARD_OFFSET) : 0;
+    let newCard = card.clone();
+    newCard.css({ 'position':'relative', 'left':'0px', 'top':intTop+'px', 'z-index':'' });
+    setupDraggable(newCard);
+    drop.append(newCard);
     card.draggable('option', 'revert', false);
-    // B: "Grab"/Detach/Append CARD
-    var intTop = ( $(drop).children().length > 0 )
-      ? Number($(drop).children().last().css('top').replace('px','')) - ($('.card:first-child').height() - CARD_OFFSET) : 0;
-    //ui.draggable.hide().detach().appendTo(drop).show('fast').removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
-    card.detach().appendTo(drop).removeAttr('style'); // NOTE: Remove style is a small fix for jquery-ui oddness
-    // C: Unhide the card that we hid when we built draggable container
-    card.find('span').css('visibility','visible'); // IMPORTANT: the cool cards we use have spans that must be set on their own
-    // D: Fix positioning CSS
-    card.css({ 'position':'relative', 'left':'0px', 'top':intTop+'px', 'z-index':'' });
-    // E: Reset draggable params (REQD here as we need to turn revert back on)
-    card.draggable({
-      helper: cascHelper,
-      start : function(event, ui){ $(this).draggable('option', 'revert', true); }
-    });
+    card.detach().hide();
   });
 
   // STEP 3: Shorten fanning padding if card stack grows too large
@@ -463,17 +465,8 @@ function doFillBoard() {
   }
 
   // STEP 4: Draggable setup
-  $('.card')
-  .draggable({
-    helper: cascHelper,
-    revert: true,
-    start : handleDragStart,
-            stop  : handleDragStop
-  })
-  .dblclick(function(){
-    handleCardDblClick($(this));
-  });
-
+  setupDraggable($('.card'));
+  
   // STEP 5: Adjust card fanning offset
   doRespLayout();
   
